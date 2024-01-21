@@ -1,9 +1,7 @@
 package main
 
-import (
-	_ "github.com/universalmacro/merchant/dao/repositories"
-)
+import "github.com/universalmacro/merchant/controllers"
 
 func main() {
-
+	controllers.Init(":8080")
 }

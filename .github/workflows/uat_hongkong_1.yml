@@ -1,4 +1,4 @@
-name: Run PRD docker
+name: uat_hongkong_1
 
 on:
   workflow_dispatch:

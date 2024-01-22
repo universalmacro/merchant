@@ -1,0 +1,23 @@
+name: Run PRD docker
+
+on:
+  workflow_dispatch:
+env:
+  PORT: "20000"
+  CONFIG: '"$(pwd)"/config/uat_hongkong_1.env.yaml'
+  DOCKER_NAME: "uat_hongkong_1"
+jobs:
+  Production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Production
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}
+            sudo docker stop ${{ env.DOCKER_NAME }}
+            sudo docker rm ${{ env.DOCKER_NAME }}
+            sudo docker run -dp ${{env.PORT}}:8080 --name ${{ env.DOCKER_NAME }} --mount type=bind,source=${{env.CONFIG}},target=/app/.env.yaml ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}

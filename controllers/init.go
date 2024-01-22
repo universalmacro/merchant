@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/server"
+	_ "github.com/universalmacro/merchant/services"
 )
 
 var router = gin.Default()

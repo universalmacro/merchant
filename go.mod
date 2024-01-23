@@ -5,6 +5,7 @@ go 1.21.6
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/universalmacro/common v0.0.0-20240119025557-49ee0ffb9515
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240123025000-f996d599f785
 	gorm.io/gorm v1.25.5
 )
 
@@ -52,7 +53,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240121151510-c495eabf06c6 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.4.0 // indirect
 	golang.org/x/crypto v0.16.0 // indirect

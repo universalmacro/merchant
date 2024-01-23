@@ -15,6 +15,9 @@ func Init(addr ...string) {
 	var sessionController = newSessionController()
 	router.Use(server.CorsMiddleware())
 	server.MetricsMiddleware(router)
+	router.GET("/version", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"version": VERSION})
+	})
 	api.SessionApiBinding(router, sessionController)
 	api.MerchantApiBinding(router, merchantController)
 	router.Run(addr...)

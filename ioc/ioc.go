@@ -1,8 +1,6 @@
 package ioc
 
 import (
-	"fmt"
-
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/node"
 	"github.com/universalmacro/common/singleton"
@@ -19,7 +17,6 @@ func createDBInstance() *gorm.DB {
 	client := node.GetNodeConfigClient()
 	config := client.GetConfig()
 	database := config.Database
-	fmt.Println(database)
 	db, err := dao.NewConnection(
 		database.Username,
 		database.Password,

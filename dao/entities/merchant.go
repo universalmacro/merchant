@@ -10,13 +10,17 @@ type Merchant struct {
 	gorm.Model
 	Account         string `gorm:"type:varchar(255);uniqueIndex;"`
 	ShortMerchantId string `gorm:"type:varchar(255);uniqueIndex;"`
-	Name            string `gorm:"type:varchar(255);"`
-	Description     string `gorm:"type:varchar(255);"`
-}
-
-type Account struct {
-	gorm.Model
-	MerchantId uint
 	auth.Password
 	*data.PhoneNumber
+	Name        string `gorm:"type:varchar(255);"`
+	Description string `gorm:"type:varchar(255);"`
+}
+
+type SubAccount struct {
+	gorm.Model
+	MerchantId uint   `gorm:"index:index:unique,composite:merchantId_account"`
+	Account    string `gorm:"type:varchar(255);index:unique,composite:merchantId_account"`
+	auth.Password
+	*data.PhoneNumber
+	Role string `gorm:"type:varchar(255);"`
 }

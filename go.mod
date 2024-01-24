@@ -5,7 +5,7 @@ go 1.21.6
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/universalmacro/common v0.0.0-20240119025557-49ee0ffb9515
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240123025000-f996d599f785
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240124075952-7ac7d939d371
 	gorm.io/gorm v1.25.5
 )
 

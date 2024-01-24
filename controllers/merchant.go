@@ -31,6 +31,10 @@ func (c *MerchantController) CreateMerchant(ctx *gin.Context) {
 	var request api.CreateMerchantRequest
 	ctx.ShouldBindJSON(&request)
 	merchant := c.merchantService.CreateMerchant(request.ShortMerchantId, request.Account, request.Password)
+	if merchant == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+		return
+	}
 	ctx.JSON(http.StatusCreated, api.Merchant{
 		ShortMerchantId: merchant.ShortMerchantId(),
 		Account:         merchant.Account(),

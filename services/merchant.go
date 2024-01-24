@@ -32,6 +32,9 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 		Account:         account,
 	}
 	merchant.SetPassword(password)
-	s.merchantRepository.Create(merchant)
+	_, ctx := s.merchantRepository.Create(merchant)
+	if ctx.RowsAffected == 0 {
+		return nil
+	}
 	return &models.Merchant{Entity: merchant}
 }

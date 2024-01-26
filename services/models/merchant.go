@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 )
 
@@ -12,6 +13,10 @@ type Merchant struct {
 
 func (m *Merchant) ID() uint {
 	return m.Entity.ID
+}
+
+func (m *Merchant) StringID() string {
+	return utils.UintToString(m.Entity.ID)
 }
 
 func (m *Merchant) Account() string {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/config"
+	"github.com/universalmacro/common/server"
 	api "github.com/universalmacro/merchant-api-interfaces"
 	"github.com/universalmacro/merchant/services"
 )
@@ -17,6 +18,57 @@ func newMerchantController() *MerchantController {
 
 type MerchantController struct {
 	merchantService *services.MerchantService
+}
+
+// DeleteMerchant implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) DeleteMerchant(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetMerchant implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) GetMerchant(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetSelfMerchant implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) GetSelfMerchant(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// ListMerchants implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) ListMerchants(ctx *gin.Context) {
+	if !ApiKeyAuth(ctx) {
+		return
+	}
+	index, limit := server.IndexAndLimit(ctx)
+	list := services.GetMerchantService().ListMerchants(index, limit)
+	result := make([]api.Merchant, len(list.Items))
+	for i, merchant := range list.Items {
+		result[i] = ConvertMerchant(merchant)
+	}
+	ctx.JSON(http.StatusOK, api.MerchantList{
+		Items: result,
+		Pagination: api.Pagination{
+			Index: list.Pagination.Index,
+			Limit: list.Pagination.Limit,
+			Total: list.Pagination.Total,
+		},
+	})
+}
+
+// UpdateMerchant implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) UpdateMerchant(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// UpdateMerchantPassword implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// UpdateSelfPassword implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) UpdateSelfPassword(ctx *gin.Context) {
+	panic("unimplemented")
 }
 
 type Headers struct {
@@ -43,8 +95,10 @@ func (c *MerchantController) CreateMerchant(ctx *gin.Context) {
 	})
 }
 
+var secretKey = config.GetString("node.secretKey")
+
 func ApiKeyAuth(ctx *gin.Context) bool {
-	secretKey := config.GetString("node.secretKey")
+	// return true
 	var headers Headers
 	ctx.ShouldBindHeader(&headers)
 	if secretKey != headers.ApiKey {

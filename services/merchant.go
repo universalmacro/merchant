@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
@@ -37,4 +38,16 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 		return nil
 	}
 	return &models.Merchant{Entity: merchant}
+}
+
+func (s *MerchantService) ListMerchants(index, limit int64) dao.List[models.Merchant] {
+	merchantList, _ := s.merchantRepository.Pagination(index, limit)
+	result := make([]models.Merchant, len(merchantList.Items))
+	for i, merchant := range merchantList.Items {
+		result[i] = models.Merchant{Entity: &merchant}
+	}
+	var list dao.List[models.Merchant]
+	list.Items = result
+	list.Pagination = merchantList.Pagination
+	return list
 }

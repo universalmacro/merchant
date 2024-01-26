@@ -1,11 +1,11 @@
-name: uat_hongkong_1
+name: uat-hongkong-1
 
 on:
   workflow_dispatch:
 env:
   PORT: "20000"
-  CONFIG: '"$(pwd)"/config/uat_hongkong_1.env.yaml'
-  DOCKER_NAME: "uat_hongkong_1"
+  CONFIG: '"$(pwd)"/config/uat-hongkong-1.env.yaml'
+  DOCKER_NAME: "uat-hongkong-1"
 jobs:
   Production:
     runs-on: ubuntu-latest

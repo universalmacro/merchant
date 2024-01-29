@@ -15,6 +15,7 @@ var VERSION = "0.0.1"
 func Init(addr ...string) {
 	var merchantController = newMerchantController()
 	var sessionController = newSessionController()
+	var verificationController = newVerificationController()
 	router.Use(server.CorsMiddleware())
 	server.MetricsMiddleware(router)
 	router.GET("/version", func(ctx *gin.Context) {
@@ -22,5 +23,6 @@ func Init(addr ...string) {
 	})
 	api.SessionApiBinding(router, sessionController)
 	api.MerchantApiBinding(router, merchantController)
+	api.VerificationApiBinding(router, verificationController)
 	router.Run(addr...)
 }

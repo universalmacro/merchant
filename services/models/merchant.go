@@ -5,6 +5,7 @@ import (
 
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
+	"github.com/universalmacro/merchant/dao/repositories"
 )
 
 type Merchant struct {
@@ -41,4 +42,25 @@ func (m *Merchant) CreatedAt() time.Time {
 
 func (m *Merchant) UpdatedAt() time.Time {
 	return m.Entity.UpdatedAt
+}
+
+func (m *Merchant) Verification(countryCode, phoneNumber, code string) bool {
+	repo := repositories.GetVerificationCodeRepository()
+	verificationCode := repo.FindByPhone(countryCode, phoneNumber)
+	if verificationCode == nil {
+		return false
+	}
+	if verificationCode.CreatedAt.Add(time.Minute * 10).After(time.Now()) {
+		return false
+	}
+	verificationCode.Tries++
+	repo.Update(verificationCode)
+	if verificationCode.Tries >= 10 {
+		return false
+	}
+	return verificationCode.Code == code
+}
+
+func (m *Merchant) CreateMember() {
+
 }

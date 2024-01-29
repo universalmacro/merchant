@@ -16,7 +16,16 @@ func Init(addr ...string) {
 	var merchantController = newMerchantController()
 	var sessionController = newSessionController()
 	var verificationController = newVerificationController()
-	router.Use(server.CorsMiddleware())
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, ApiKey")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+		c.Next()
+	})
 	server.MetricsMiddleware(router)
 	router.GET("/version", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"version": VERSION})

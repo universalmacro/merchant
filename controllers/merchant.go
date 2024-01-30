@@ -20,6 +20,11 @@ type MerchantController struct {
 	merchantService *services.MerchantService
 }
 
+// ListSelfMembers implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) ListSelfMembers(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
 // DeleteMerchant implements merchantapiinterfaces.MerchantApi.
 func (*MerchantController) DeleteMerchant(ctx *gin.Context) {
 	panic("unimplemented")

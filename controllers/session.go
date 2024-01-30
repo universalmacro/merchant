@@ -5,13 +5,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 	api "github.com/universalmacro/merchant-api-interfaces"
+	"github.com/universalmacro/merchant/services"
 )
 
 func newSessionController() *SessionController {
-	return &SessionController{}
+	return &SessionController{
+		sessionService: services.GetSessionService(),
+	}
 }
 
 type SessionController struct {
+	sessionService *services.SessionService
 }
 
 // CreateSession implements merchantapiinterfaces.SessionApi.

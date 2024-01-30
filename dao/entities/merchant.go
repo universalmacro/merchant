@@ -18,7 +18,7 @@ type Merchant struct {
 
 type SubAccount struct {
 	gorm.Model
-	MerchantId uint   `gorm:"index:index:unique,composite:merchantId_account"`
+	MerchantId uint   `gorm:"index:unique,composite:merchantId_account"`
 	Account    string `gorm:"type:varchar(255);index:unique,composite:merchantId_account"`
 	auth.Password
 	*data.PhoneNumber

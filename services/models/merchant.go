@@ -44,6 +44,10 @@ func (m *Merchant) UpdatedAt() time.Time {
 	return m.Entity.UpdatedAt
 }
 
+func (m *Merchant) PasswordMatching(password string) bool {
+	return m.PasswordMatching(password)
+}
+
 func (m *Merchant) UpdatePassword(password string) {
 	m.Entity.SetPassword(password)
 	repo := repositories.GetMerchantRepository()
@@ -69,4 +73,8 @@ func (m *Merchant) Verification(countryCode, phoneNumber, code string) bool {
 
 func (m *Merchant) CreateMember() {
 
+}
+
+func (m *Merchant) CreateSession() string {
+	return ""
 }

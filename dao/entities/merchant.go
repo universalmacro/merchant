@@ -22,5 +22,4 @@ type SubAccount struct {
 	Account    string `gorm:"type:varchar(255);index:unique,composite:merchantId_account"`
 	auth.Password
 	*data.PhoneNumber
-	Role string `gorm:"type:varchar(255);"`
 }

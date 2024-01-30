@@ -17,14 +17,14 @@ var merchantSingleton = singleton.NewSingleton(newMerchantService, singleton.Laz
 
 func newMerchantService() *MerchantService {
 	return &MerchantService{
-		merchantRepository: repositories.GetMerchantRepository(),
-		accountRepository:  repositories.GetAccountRepository(),
+		merchantRepository:   repositories.GetMerchantRepository(),
+		subAccountRepository: repositories.GetSubAccountRepository(),
 	}
 }
 
 type MerchantService struct {
-	merchantRepository *repositories.MerchantRepository
-	accountRepository  *repositories.AccountRepository
+	merchantRepository   *repositories.MerchantRepository
+	subAccountRepository *repositories.SubAccountRepository
 }
 
 func (s *MerchantService) GetMerchant(merchantId uint) *models.Merchant {
@@ -58,4 +58,12 @@ func (s *MerchantService) ListMerchants(index, limit int64) dao.List[models.Merc
 	list.Items = result
 	list.Pagination = merchantList.Pagination
 	return list
+}
+
+func (s *MerchantService) GetMerchantByAccount(account string) *models.Merchant {
+	merchant, _ := s.merchantRepository.GetByAccount(account)
+	if merchant == nil {
+		return nil
+	}
+	return &models.Merchant{Entity: merchant}
 }

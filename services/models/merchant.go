@@ -44,6 +44,12 @@ func (m *Merchant) UpdatedAt() time.Time {
 	return m.Entity.UpdatedAt
 }
 
+func (m *Merchant) UpdatePassword(password string) {
+	m.Entity.SetPassword(password)
+	repo := repositories.GetMerchantRepository()
+	repo.Update(m.Entity)
+}
+
 func (m *Merchant) Verification(countryCode, phoneNumber, code string) bool {
 	repo := repositories.GetVerificationCodeRepository()
 	verificationCode := repo.FindByPhone(countryCode, phoneNumber)

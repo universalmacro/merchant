@@ -62,8 +62,16 @@ func (*MerchantController) UpdateMerchant(ctx *gin.Context) {
 }
 
 // UpdateMerchantPassword implements merchantapiinterfaces.MerchantApi.
-func (*MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
-	panic("unimplemented")
+func (c *MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
+	var request api.UpdatePasswordRequest
+	ctx.ShouldBindJSON(&request)
+	if !ApiKeyAuth(ctx) {
+		return
+	}
+	id := server.UintID(ctx, "id")
+	merchant := c.merchantService.GetMerchant(id)
+	merchant.UpdatePassword(request.Password)
+	ctx.JSON(http.StatusNoContent, nil)
 }
 
 // UpdateSelfPassword implements merchantapiinterfaces.MerchantApi.

@@ -27,6 +27,14 @@ type MerchantService struct {
 	accountRepository  *repositories.AccountRepository
 }
 
+func (s *MerchantService) GetMerchant(merchantId uint) *models.Merchant {
+	merchant, _ := s.merchantRepository.GetById(merchantId)
+	if merchant == nil {
+		return nil
+	}
+	return &models.Merchant{Entity: merchant}
+}
+
 func (s *MerchantService) CreateMerchant(shortMerchantId, account, password string) *models.Merchant {
 	merchant := &entities.Merchant{
 		ShortMerchantId: shortMerchantId,

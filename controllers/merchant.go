@@ -63,20 +63,20 @@ func (*MerchantController) UpdateMerchant(ctx *gin.Context) {
 
 // UpdateMerchantPassword implements merchantapiinterfaces.MerchantApi.
 func (c *MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
+	id := server.UintID(ctx, "id")
+	merchant := c.merchantService.GetMerchant(id)
+	if merchant == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "merchant not found"})
+		return
+	}
 	var request api.UpdatePasswordRequest
 	ctx.ShouldBindJSON(&request)
 	if !ApiKeyAuth(ctx) {
 		return
 	}
-	id := server.UintID(ctx, "id")
-	merchant := c.merchantService.GetMerchant(id)
+
 	merchant.UpdatePassword(request.Password)
 	ctx.JSON(http.StatusNoContent, nil)
-}
-
-// UpdateSelfPassword implements merchantapiinterfaces.MerchantApi.
-func (*MerchantController) UpdateSelfPassword(ctx *gin.Context) {
-	panic("unimplemented")
 }
 
 type Headers struct {

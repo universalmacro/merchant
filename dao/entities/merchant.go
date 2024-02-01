@@ -16,6 +16,9 @@ type Merchant struct {
 	Description string `gorm:"type:varchar(255);"`
 }
 
+type Account struct {
+}
+
 type SubAccount struct {
 	gorm.Model
 	MerchantId uint   `gorm:"index:unique,composite:merchantId_account"`

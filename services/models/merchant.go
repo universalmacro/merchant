@@ -45,7 +45,7 @@ func (m *Merchant) UpdatedAt() time.Time {
 }
 
 func (m *Merchant) PasswordMatching(password string) bool {
-	return m.PasswordMatching(password)
+	return m.Entity.PasswordMatching(password)
 }
 
 func (m *Merchant) UpdatePassword(password string) {

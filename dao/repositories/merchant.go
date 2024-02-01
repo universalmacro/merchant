@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var merchantRepository = singleton.NewSingleton(func() *MerchantRepository {
+var merchantRepository = singleton.SingletonFactory(func() *MerchantRepository {
 	return &MerchantRepository{
 		Repository: dao.NewRepository[entities.Merchant](ioc.GetDBInstance()),
 	}
@@ -26,7 +26,7 @@ func (m *MerchantRepository) GetByAccount(account string) (*entities.Merchant, *
 	return m.FindOne("account = ?", account)
 }
 
-var subAccountRepository = singleton.NewSingleton(func() *SubAccountRepository {
+var subAccountRepository = singleton.SingletonFactory(func() *SubAccountRepository {
 	return &SubAccountRepository{}
 }, singleton.Lazy)
 

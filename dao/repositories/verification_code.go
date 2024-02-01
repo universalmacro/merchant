@@ -6,7 +6,7 @@ import (
 	"github.com/universalmacro/merchant/dao/entities"
 )
 
-var verificationCodeRepository = singleton.NewSingleton(func() *VerificationCodeRepository {
+var verificationCodeRepository = singleton.SingletonFactory(func() *VerificationCodeRepository {
 	return &VerificationCodeRepository{}
 }, singleton.Lazy)
 

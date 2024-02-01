@@ -7,7 +7,7 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
-var sessionServiceSingleton = singleton.NewSingleton(newSessionServices, singleton.Eager)
+var sessionServiceSingleton = singleton.SingletonFactory(newSessionServices, singleton.Eager)
 
 func GetSessionService() *SessionService {
 	return sessionServiceSingleton.Get()

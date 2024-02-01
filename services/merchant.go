@@ -13,7 +13,7 @@ func GetMerchantService() *MerchantService {
 	return merchantSingleton.Get()
 }
 
-var merchantSingleton = singleton.NewSingleton(newMerchantService, singleton.Lazy)
+var merchantSingleton = singleton.SingletonFactory(newMerchantService, singleton.Lazy)
 
 func newMerchantService() *MerchantService {
 	return &MerchantService{

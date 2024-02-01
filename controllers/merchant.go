@@ -20,6 +20,26 @@ type MerchantController struct {
 	merchantService *services.MerchantService
 }
 
+// DeleteSelfContactForm implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) DeleteSelfContactForm(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetSelfContactForm implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) GetSelfContactForm(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// ListSelfContactForm implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) ListSelfContactForm(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// SendContactForm implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) SendContactForm(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
 // ListSelfMembers implements merchantapiinterfaces.MerchantApi.
 func (*MerchantController) ListSelfMembers(ctx *gin.Context) {
 	panic("unimplemented")

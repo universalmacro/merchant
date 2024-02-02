@@ -78,8 +78,9 @@ func (m *Merchant) CreateMember() {
 }
 
 func (m *Merchant) CreateSession() string {
+	sessionId := sessionIdGenerator.String()
 	expired := time.Now().Add(time.Hour * 24 * 7).Unix()
-	claims := Claims{Type: "MAIN", ID: sessionIdGenerator.String(), MerchantID: m.ID(), StandardClaims: jwt.StandardClaims{ExpiresAt: expired}}
+	claims := Claims{Type: "MAIN", ID: sessionId, MerchantID: m.ID(), StandardClaims: jwt.StandardClaims{Id: sessionId, ExpiresAt: expired}}
 	jwt, _ := ioc.GetJwtSigner().SignJwt(claims)
 	return jwt
 }

@@ -1,11 +1,24 @@
 package ioc
 
 import (
+	"github.com/universalmacro/common/auth"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/node"
 	"github.com/universalmacro/common/singleton"
 	"gorm.io/gorm"
 )
+
+var jwtSignerSingleton = singleton.SingletonFactory[auth.JwtSigner](createJwtSignerSingleton, singleton.Eager)
+
+func GetJwtSigner() *auth.JwtSigner {
+	return jwtSignerSingleton.Get()
+}
+
+func createJwtSignerSingleton() *auth.JwtSigner {
+	client := node.GetNodeConfigClient()
+	config := client.GetConfig()
+	return auth.NewJwtSigner([]byte(config.SecretKey))
+}
 
 var dbSingleton = singleton.SingletonFactory[gorm.DB](createDBInstance, singleton.Lazy)
 

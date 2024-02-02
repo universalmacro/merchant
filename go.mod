@@ -4,7 +4,7 @@ go 1.21.6
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/universalmacro/common v0.0.0-20240201045023-bd502e2ae056
+	github.com/universalmacro/common v0.0.0-20240202082334-2de65be4d566
 	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240201062052-e75b13452ab0
 	gorm.io/gorm v1.25.5
 )
@@ -12,6 +12,7 @@ require (
 require (
 	github.com/Depado/ginprom v1.8.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect

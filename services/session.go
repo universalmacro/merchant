@@ -33,11 +33,15 @@ func (s *SessionService) CreateSession(account, password string, shortMerchantId
 }
 
 var ErrAccountNotFound = errors.New("account not found")
+var ErrPasswordNotMatch = errors.New("password not match")
 
 func (s *SessionService) CreateMerchantSession(account, password string) (string, error) {
 	merchant := s.merchantService.GetMerchantByAccount(account)
 	if merchant == nil {
 		return "", ErrAccountNotFound
+	}
+	if !merchant.PasswordMatching(password) {
+		return "", ErrPasswordNotMatch
 	}
 	return merchant.CreateSession(), nil
 }

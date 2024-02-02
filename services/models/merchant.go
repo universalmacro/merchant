@@ -3,9 +3,11 @@ package models
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
+	"github.com/universalmacro/merchant/ioc"
 )
 
 type Merchant struct {
@@ -76,5 +78,8 @@ func (m *Merchant) CreateMember() {
 }
 
 func (m *Merchant) CreateSession() string {
-	return ""
+	expired := time.Now().Add(time.Hour * 24 * 7).Unix()
+	claims := Claims{Type: "MAIN", ID: sessionIdGenerator.String(), MerchantID: m.ID(), StandardClaims: jwt.StandardClaims{ExpiresAt: expired}}
+	jwt, _ := ioc.GetJwtSigner().SignJwt(claims)
+	return jwt
 }

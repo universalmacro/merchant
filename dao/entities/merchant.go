@@ -24,9 +24,6 @@ func (a *Merchant) BeforeCreate(tx *gorm.DB) (err error) {
 	return err
 }
 
-type Account struct {
-}
-
 type SubAccount struct {
 	gorm.Model
 	MerchantId uint   `gorm:"index:unique,composite:merchantId_account"`

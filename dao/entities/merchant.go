@@ -3,6 +3,7 @@ package entities
 import (
 	"github.com/universalmacro/common/auth"
 	"github.com/universalmacro/common/dao/data"
+	"github.com/universalmacro/common/snowflake"
 	"gorm.io/gorm"
 )
 
@@ -14,6 +15,13 @@ type Merchant struct {
 	*data.PhoneNumber
 	Name        string `gorm:"type:varchar(255);"`
 	Description string `gorm:"type:varchar(255);"`
+}
+
+var merchantIdGenerator = snowflake.NewIdGenertor(0)
+
+func (a *Merchant) BeforeCreate(tx *gorm.DB) (err error) {
+	a.Model.ID = merchantIdGenerator.Uint()
+	return err
 }
 
 type Account struct {

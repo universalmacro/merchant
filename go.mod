@@ -4,8 +4,9 @@ go 1.21.6
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/universalmacro/common v0.0.0-20240202082334-2de65be4d566
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240201062052-e75b13452ab0
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240205041934-85e5f701df74
 	gorm.io/gorm v1.25.5
 )
 
@@ -25,7 +26,6 @@ require (
 	github.com/go-playground/validator/v10 v10.17.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

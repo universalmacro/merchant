@@ -15,3 +15,10 @@ func ConvertMerchant(m models.Merchant) api.Merchant {
 		Name:            m.Name(),
 	}
 }
+
+func ConvertSpace(m models.Space) api.Space {
+	return api.Space{
+		Id:   m.StringID(),
+		Name: m.Name,
+	}
+}

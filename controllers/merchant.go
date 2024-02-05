@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/universalmacro/common/config"
 	"github.com/universalmacro/common/server"
 	api "github.com/universalmacro/merchant-api-interfaces"
 	"github.com/universalmacro/merchant/services"
@@ -104,10 +103,6 @@ func (c *MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, nil)
 }
 
-type Headers struct {
-	ApiKey string
-}
-
 // createMerchant implements merchantapiinterfaces.MerchantApi.
 func (c *MerchantController) CreateMerchant(ctx *gin.Context) {
 	if !ApiKeyAuth(ctx) {
@@ -126,17 +121,4 @@ func (c *MerchantController) CreateMerchant(ctx *gin.Context) {
 		CreatedAt:       merchant.CreatedAt().Unix(),
 		UpdatedAt:       merchant.UpdatedAt().Unix(),
 	})
-}
-
-var secretKey = config.GetString("node.secretKey")
-
-func ApiKeyAuth(ctx *gin.Context) bool {
-	// return true
-	var headers Headers
-	ctx.ShouldBindHeader(&headers)
-	if secretKey != headers.ApiKey {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
-		return false
-	}
-	return true
 }

@@ -5,6 +5,8 @@ import (
 
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/merchant/dao/repositories"
+	"github.com/universalmacro/merchant/ioc"
+	"github.com/universalmacro/merchant/services/models"
 )
 
 var sessionServiceSingleton = singleton.SingletonFactory(newSessionServices, singleton.Eager)
@@ -47,4 +49,21 @@ func (s *SessionService) CreateMerchantSession(account, password string) (string
 }
 func (s *SessionService) CreateSubAccountSession(account, password, shortMerchantId string) (string, error) {
 	return "", nil
+}
+
+func (self *SessionService) TokenVerification(token string) models.Account {
+	claims, err := ioc.GetJwtSigner().VerifyJwt(token)
+	if err != nil {
+		return nil
+	}
+	t, ok := claims["type"].(string)
+	if !ok {
+		return nil
+	}
+	if t == "MAIN" {
+		merchant := self.merchantService.GetMerchantByAccount(claims["merchantId"].(string))
+		return merchant
+	} else {
+		return nil
+	}
 }

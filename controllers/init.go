@@ -16,6 +16,7 @@ func Init(addr ...string) {
 	var merchantController = newMerchantController()
 	var sessionController = newSessionController()
 	var verificationController = newVerificationController()
+	var spaceController = newSpaceController()
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
@@ -33,5 +34,6 @@ func Init(addr ...string) {
 	api.SessionApiBinding(router, sessionController)
 	api.MerchantApiBinding(router, merchantController)
 	api.VerificationApiBinding(router, verificationController)
+	api.SpaceApiBinding(router, spaceController)
 	router.Run(addr...)
 }

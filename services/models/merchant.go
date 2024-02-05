@@ -14,6 +14,10 @@ type Merchant struct {
 	Entity *entities.Merchant
 }
 
+func (m *Merchant) MerchantId() uint {
+	return m.ID()
+}
+
 func (m *Merchant) ID() uint {
 	return m.Entity.ID
 }
@@ -88,4 +92,9 @@ func (m *Merchant) CreateSession() string {
 	}
 	jwt, _ := ioc.GetJwtSigner().SignJwt(claims)
 	return jwt
+}
+
+func (m *Merchant) CreateSpace(name string) *Space {
+	entity, _ := repositories.GetSpaceRepository().Create(&entities.Space{MerchantId: m.ID(), Name: name})
+	return &Space{entity}
 }

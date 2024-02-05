@@ -51,8 +51,8 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 func (s *MerchantService) ListMerchants(index, limit int64) dao.List[models.Merchant] {
 	merchantList, _ := s.merchantRepository.Pagination(index, limit)
 	result := make([]models.Merchant, len(merchantList.Items))
-	for i, merchant := range merchantList.Items {
-		result[i] = models.Merchant{Entity: &merchant}
+	for i := range merchantList.Items {
+		result[i] = models.Merchant{Entity: &merchantList.Items[i]}
 	}
 	var list dao.List[models.Merchant]
 	list.Items = result

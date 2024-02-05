@@ -68,8 +68,8 @@ func (*MerchantController) ListMerchants(ctx *gin.Context) {
 	index, limit := server.IndexAndLimit(ctx)
 	list := services.GetMerchantService().ListMerchants(index, limit)
 	result := make([]api.Merchant, len(list.Items))
-	for i, merchant := range list.Items {
-		result[i] = ConvertMerchant(merchant)
+	for i := range list.Items {
+		result[i] = ConvertMerchant(list.Items[i])
 	}
 	ctx.JSON(http.StatusOK, api.MerchantList{
 		Items: result,

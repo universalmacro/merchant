@@ -6,13 +6,7 @@ import (
 	"errors"
 
 	"github.com/universalmacro/common/data"
-	"gorm.io/gorm"
 )
-
-type SpaceAsset struct {
-	gorm.Model
-	SpaceID uint `gorm:"index"`
-}
 
 type Table struct {
 	SpaceAsset
@@ -26,10 +20,6 @@ type Food struct {
 	Price       int64
 	FixedOffset int64
 	Image       string `gorm:"type:varchar(256)"`
-}
-
-type Order struct {
-	SpaceAsset
 }
 
 type Option struct {

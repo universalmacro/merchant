@@ -80,13 +80,13 @@ func (self *SpaceController) GetSpace(ctx *gin.Context) {
 }
 
 // ListSpaces implements merchantapiinterfaces.SpaceApi.
-func (*SpaceController) ListSpaces(ctx *gin.Context) {
+func (self *SpaceController) ListSpaces(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	merchant := services.GetMerchantService().GetMerchant(account.MerchantId())
+	merchant := self.merchantService.GetMerchant(account.MerchantId())
 	if merchant == nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -100,7 +100,8 @@ func (*SpaceController) ListSpaces(ctx *gin.Context) {
 	for i := range spaces.Items {
 		apiSpaces[i] = ConvertSpace(&spaces.Items[i])
 	}
-	ctx.JSON(http.StatusOK, dao.List[api.Space]{Items: apiSpaces, Pagination: spaces.Pagination})
+	ctx.JSON(http.StatusOK,
+		dao.List[api.Space]{Items: apiSpaces, Pagination: spaces.Pagination})
 }
 
 // UpdateSpace implements merchantapiinterfaces.SpaceApi.

@@ -45,20 +45,25 @@ func (s *Space) Delete() {
 	repo.Delete(s.Space)
 }
 
-func (s *Space) CreateTable(label string) error {
+func (s *Space) CreateTable(label string) (*Table, error) {
 	tableRepo := repositories.GetTableRepository()
 	table, _ := tableRepo.List(
 		dao.Where("space_id = ?", s.ID()),
 		dao.Where("label = ?", label),
 	)
 	if len(table) > 0 {
-		return errors.New("tableLabel already exists")
+		return nil, errors.New("tableLabel already exists")
 	}
-	tableRepo.Save(&entities.Table{
+	t := &entities.Table{
 		SpaceAsset: entities.SpaceAsset{
 			SpaceID: s.ID(),
 		},
 		Label: label,
-	})
-	return nil
+	}
+	tableRepo.Save(t)
+	return &Table{t}, nil
+}
+
+func (s *Space) CreateFood(name string, description string, price, fixedOffset *int64) {
+
 }

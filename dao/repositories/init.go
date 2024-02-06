@@ -10,5 +10,6 @@ func init() {
 		&entities.SubAccount{},
 		&entities.VerificationCode{},
 		&entities.Space{},
-		&entities.Table{})
+		&entities.Table{},
+		&entities.Food{})
 }

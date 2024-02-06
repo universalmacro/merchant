@@ -25,8 +25,25 @@ func (*OrderController) CancelOrder(ctx *gin.Context) {
 }
 
 // CreateFood implements merchantapiinterfaces.OrderApi.
-func (*OrderController) CreateFood(ctx *gin.Context) {
-	panic("unimplemented")
+func (self *OrderController) CreateFood(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	id := server.UintID(ctx, "id")
+	space := self.spaceService.GetSpace(id)
+	if space == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	if !space.Granted(account) {
+		ctx.JSON(403, gin.H{"error": "forbidden"})
+		return
+	}
+	var createFoodRequest api.SaveFoodRequest
+	ctx.ShouldBindJSON(&createFoodRequest)
+	// food, err := space.CreateFood(createFoodRequest.Name, createFoodRequest.Description, createFoodRequest.Price, createFoodRequest.FixedOffset)
 }
 
 // CreateOrder implements merchantapiinterfaces.OrderApi.
@@ -53,11 +70,12 @@ func (self *OrderController) CreateTable(ctx *gin.Context) {
 	}
 	var createTableRequest api.SaveTableRequest
 	ctx.ShouldBindJSON(&createTableRequest)
-	err := space.CreateTable(createTableRequest.Label)
+	table, err := space.CreateTable(createTableRequest.Label)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(201, ConvertTable(table))
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.
@@ -96,6 +114,10 @@ func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
 }
 
 // UpdateTable implements merchantapiinterfaces.OrderApi.
-func (*OrderController) UpdateTable(ctx *gin.Context) {
-	panic("unimplemented")
+func (self *OrderController) UpdateTable(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 }

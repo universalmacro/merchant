@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/universalmacro/common/utils"
 	api "github.com/universalmacro/merchant-api-interfaces"
 	"github.com/universalmacro/merchant/services/models"
 )
@@ -20,5 +21,12 @@ func ConvertSpace(m *models.Space) api.Space {
 	return api.Space{
 		Id:   m.StringID(),
 		Name: m.Name(),
+	}
+}
+
+func ConvertTable(t *models.Table) api.Table {
+	return api.Table{
+		Id:    utils.UintToString(t.ID),
+		Label: t.Label,
 	}
 }

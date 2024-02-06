@@ -5,6 +5,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type SpaceAsset struct {
+	gorm.Model
+	SpaceID uint `gorm:"index"`
+}
+
 type Space struct {
 	gorm.Model
 	MerchantId uint   `gorm:"index"`

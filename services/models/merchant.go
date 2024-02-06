@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
@@ -81,6 +82,10 @@ func (m *Merchant) CreateMember() {
 
 }
 
+func (m *Merchant) Granted(account Account) bool {
+	return m.ID() == account.MerchantId()
+}
+
 func (m *Merchant) CreateSession() string {
 	sessionId := sessionIdGenerator.String()
 	expired := time.Now().Add(time.Hour * 24 * 7).Unix()
@@ -97,4 +102,13 @@ func (m *Merchant) CreateSession() string {
 func (m *Merchant) CreateSpace(name string) *Space {
 	entity, _ := repositories.GetSpaceRepository().Create(&entities.Space{MerchantId: m.ID(), Name: name})
 	return &Space{entity}
+}
+
+func (m *Merchant) ListSpaces() dao.List[Space] {
+	list, _ := repositories.GetSpaceRepository().Pagination(0, 10000)
+	spaces := make([]Space, len(list.Items))
+	for i := range list.Items {
+		spaces[i] = Space{&list.Items[i]}
+	}
+	return dao.List[Space]{Items: spaces, Pagination: list.Pagination}
 }

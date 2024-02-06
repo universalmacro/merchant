@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/server"
 	api "github.com/universalmacro/merchant-api-interfaces"
 	"github.com/universalmacro/merchant/services"
@@ -51,8 +52,7 @@ func (self *SpaceController) DeleteSpace(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	id := server.UintID(ctx, "id")
-	space := self.spaceService.GetSpace(id)
+	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
@@ -66,8 +66,7 @@ func (self *SpaceController) DeleteSpace(ctx *gin.Context) {
 
 // GetSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) GetSpace(ctx *gin.Context) {
-	id := server.UintID(ctx, "id")
-	space := self.spaceService.GetSpace(id)
+	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
@@ -77,7 +76,26 @@ func (self *SpaceController) GetSpace(ctx *gin.Context) {
 
 // ListSpaces implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) ListSpaces(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	merchant := services.GetMerchantService().GetMerchant(account.MerchantId())
+	if merchant == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	if !merchant.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	spaces := merchant.ListSpaces()
+	apiSpaces := make([]api.Space, len(spaces.Items))
+	for i := range spaces.Items {
+		apiSpaces[i] = ConvertSpace(&spaces.Items[i])
+	}
+	ctx.JSON(http.StatusOK, dao.List[api.Space]{Items: apiSpaces, Pagination: spaces.Pagination})
 }
 
 // UpdateSpace implements merchantapiinterfaces.SpaceApi.
@@ -87,10 +105,9 @@ func (self *SpaceController) UpdateSpace(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	id := server.UintID(ctx, "id")
 	var updateSpaceRequest api.SaveSpaceRequest
 	ctx.ShouldBindJSON(&updateSpaceRequest)
-	space := self.spaceService.GetSpace(id)
+	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return

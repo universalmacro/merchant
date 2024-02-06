@@ -33,5 +33,6 @@ func getAccount(ctx *gin.Context) models.Account {
 	if headers.Authorization == "" {
 		return nil
 	}
-	return services.GetSessionService().TokenVerification(headers.Authorization)
+	account, _ := services.GetSessionService().TokenVerification(headers.Authorization)
+	return account
 }

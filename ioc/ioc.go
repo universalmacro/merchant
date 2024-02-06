@@ -2,6 +2,7 @@ package ioc
 
 import (
 	"github.com/universalmacro/common/auth"
+	"github.com/universalmacro/common/config"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/node"
 	"github.com/universalmacro/common/singleton"
@@ -15,9 +16,12 @@ func GetJwtSigner() *auth.JwtSigner {
 }
 
 func createJwtSignerSingleton() *auth.JwtSigner {
-	client := node.GetNodeConfigClient()
-	config := client.GetConfig()
-	return auth.NewJwtSigner([]byte(config.SecretKey))
+	configClient := node.NewNodeConfigClient(
+		config.GetString("core.apiUrl"),
+		config.GetString("node.id"),
+		config.GetString("node.secretKey"))
+	config := configClient.GetConfig()
+	return auth.NewJwtSigner([]byte(config.Server.JwtSecret))
 }
 
 var dbSingleton = singleton.SingletonFactory[gorm.DB](createDBInstance, singleton.Lazy)
@@ -27,8 +31,11 @@ func GetDBInstance() *gorm.DB {
 }
 
 func createDBInstance() *gorm.DB {
-	client := node.GetNodeConfigClient()
-	config := client.GetConfig()
+	configClient := node.NewNodeConfigClient(
+		config.GetString("core.apiUrl"),
+		config.GetString("node.id"),
+		config.GetString("node.secretKey"))
+	config := configClient.GetConfig()
 	database := config.Database
 	db, err := dao.NewConnection(
 		database.Username,

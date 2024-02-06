@@ -10,7 +10,7 @@ var sessionIdGenerator = snowflake.NewIdGenertor(0)
 type Claims struct {
 	jwt.StandardClaims
 	ID         string `json:"id"`
-	MerchantID uint   `json:"merchantId"`
+	MerchantID string `json:"merchantId"`
 	Account    string `json:"account"`
 	Type       string `json:"type"`
 }

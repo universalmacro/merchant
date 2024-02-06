@@ -2,8 +2,10 @@ package services
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/universalmacro/common/singleton"
+	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/repositories"
 	"github.com/universalmacro/merchant/ioc"
 	"github.com/universalmacro/merchant/services/models"
@@ -51,19 +53,25 @@ func (s *SessionService) CreateSubAccountSession(account, password, shortMerchan
 	return "", nil
 }
 
-func (self *SessionService) TokenVerification(token string) models.Account {
-	claims, err := ioc.GetJwtSigner().VerifyJwt(token)
+func (self *SessionService) TokenVerification(token string) (models.Account, error) {
+	sp := strings.Split(token, " ")
+	if len(sp) != 2 {
+		return nil, errors.New("invalid token")
+	}
+	jwt := sp[1]
+	claims, err := ioc.GetJwtSigner().VerifyJwt(jwt)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	t, ok := claims["type"].(string)
 	if !ok {
-		return nil
+		return nil, errors.New("invalid token")
 	}
 	if t == "MAIN" {
-		merchant := self.merchantService.GetMerchantByAccount(claims["merchantId"].(string))
-		return merchant
+		id, _ := claims["merchantId"].(string)
+		merchant := self.merchantService.GetMerchant(utils.StringToUint(id))
+		return merchant, nil
 	} else {
-		return nil
+		return nil, errors.New("invalid token")
 	}
 }

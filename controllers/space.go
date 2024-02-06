@@ -13,6 +13,7 @@ import (
 func newSpaceController() *SpaceController {
 	return &SpaceController{
 		merchantService: services.GetMerchantService(),
+		spaceService:    services.GetSpaceService(),
 	}
 }
 
@@ -34,6 +35,10 @@ func (*SpaceController) ListTables(ctx *gin.Context) {
 // CreateSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) CreateSpace(ctx *gin.Context) {
 	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 	merchant := self.merchantService.GetMerchant(account.MerchantId())
 	if merchant == nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})

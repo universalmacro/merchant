@@ -24,5 +24,8 @@ type SpaceService struct {
 
 func (self *SpaceService) GetSpace(spaceId uint) *models.Space {
 	s, _ := self.spaceRepository.GetById(spaceId)
+	if s == nil {
+		return nil
+	}
 	return &models.Space{Space: s}
 }

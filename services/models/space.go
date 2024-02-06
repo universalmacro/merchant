@@ -1,6 +1,9 @@
 package models
 
 import (
+	"errors"
+
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
@@ -40,4 +43,22 @@ func (s *Space) Submit() *Space {
 func (s *Space) Delete() {
 	repo := repositories.GetSpaceRepository()
 	repo.Delete(s.Space)
+}
+
+func (s *Space) CreateTable(label string) error {
+	tableRepo := repositories.GetTableRepository()
+	table, _ := tableRepo.List(
+		dao.Where("space_id = ?", s.ID()),
+		dao.Where("label = ?", label),
+	)
+	if len(table) > 0 {
+		return errors.New("tableLabel already exists")
+	}
+	tableRepo.Save(&entities.Table{
+		SpaceAsset: entities.SpaceAsset{
+			SpaceID: s.ID(),
+		},
+		Label: label,
+	})
+	return nil
 }

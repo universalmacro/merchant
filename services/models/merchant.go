@@ -92,7 +92,7 @@ func (m *Merchant) CreateSession() string {
 	claims := Claims{
 		Type:           "MAIN",
 		ID:             sessionId,
-		MerchantID:     m.ID(),
+		MerchantID:     m.StringID(),
 		StandardClaims: jwt.StandardClaims{Id: sessionId, ExpiresAt: expired},
 	}
 	jwt, _ := ioc.GetJwtSigner().SignJwt(claims)

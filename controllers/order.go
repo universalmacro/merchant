@@ -31,8 +31,7 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
-	id := server.UintID(ctx, "id")
-	space := self.spaceService.GetSpace(id)
+	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return

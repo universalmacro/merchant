@@ -18,7 +18,7 @@ type Food struct {
 	Name        string `gorm:"type:varchar(100)"`
 	Description string `gorm:"type:varchar(200)"`
 	Price       int64
-	FixedOffset int64
+	FixedOffset *int64
 	Image       string `gorm:"type:varchar(256)"`
 }
 

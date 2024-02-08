@@ -21,3 +21,10 @@ jobs:
             sudo docker stop ${{ env.DOCKER_NAME }}
             sudo docker rm ${{ env.DOCKER_NAME }}
             sudo docker run -dp ${{env.PORT}}:8080 --name ${{ env.DOCKER_NAME }} --mount type=bind,source=${{env.CONFIG}},target=/app/.env.yaml ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}
+      - name: wecom robot action
+        uses: guangzhengli/wecom-notification-action@main
+        with:
+          webhook: ${{ secrets.WECOM_WEBHOOK_KEY}}
+          is_at_all: "false"
+          type: "message"
+          message: "uat-hongkong-1 deploy success"

@@ -28,10 +28,3 @@ jobs:
             GIT_NAME=${{ secrets.GIT_NAME }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}:latest
-      - name: wecom robot action
-        uses: guangzhengli/wecom-notification-action@main
-        with:
-          webhook: ${{ secrets.WECOM_WEBHOOK_KEY}}
-          is_at_all: "false"
-          type: "message"
-          message: "Merchant API docker build success!"

@@ -11,12 +11,14 @@ func newOrderController() *OrderController {
 	return &OrderController{
 		merchantService: services.GetMerchantService(),
 		spaceService:    services.GetSpaceService(),
+		tableService:    services.GetTableService(),
 	}
 }
 
 type OrderController struct {
 	merchantService *services.MerchantService
 	spaceService    *services.SpaceService
+	tableService    *services.TableService
 }
 
 // CancelOrder implements merchantapiinterfaces.OrderApi.
@@ -83,8 +85,24 @@ func (*OrderController) DeleteFood(ctx *gin.Context) {
 }
 
 // DeleteTable implements merchantapiinterfaces.OrderApi.
-func (*OrderController) DeleteTable(ctx *gin.Context) {
-	panic("unimplemented")
+func (self *OrderController) DeleteTable(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	id := server.UintID(ctx, "id")
+	table := self.tableService.GetTable(id)
+	if table == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	if !table.Granted(account) {
+		ctx.JSON(403, gin.H{"error": "forbidden"})
+		return
+	}
+	table.Delete()
+	ctx.JSON(204, nil)
 }
 
 // GetFoodById implements merchantapiinterfaces.OrderApi.
@@ -119,4 +137,17 @@ func (self *OrderController) UpdateTable(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
+	id := server.UintID(ctx, "id")
+	table := self.tableService.GetTable(id)
+	if table == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	if !table.Granted(account) {
+		ctx.JSON(403, gin.H{"error": "forbidden"})
+		return
+	}
+	var updateTableRequest api.SaveTableRequest
+	ctx.ShouldBindJSON(&updateTableRequest)
+	table.SetLabel(updateTableRequest.Label).Submit()
 }

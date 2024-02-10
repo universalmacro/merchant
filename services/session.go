@@ -8,7 +8,6 @@ import (
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/repositories"
 	"github.com/universalmacro/merchant/ioc"
-	"github.com/universalmacro/merchant/services/models"
 )
 
 var sessionServiceSingleton = singleton.SingletonFactory(newSessionServices, singleton.Eager)
@@ -53,7 +52,7 @@ func (s *SessionService) CreateSubAccountSession(account, password, shortMerchan
 	return "", nil
 }
 
-func (self *SessionService) TokenVerification(token string) (models.Account, error) {
+func (self *SessionService) TokenVerification(token string) (Account, error) {
 	sp := strings.Split(token, " ")
 	if len(sp) != 2 {
 		return nil, errors.New("invalid token")

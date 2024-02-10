@@ -11,7 +11,6 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 	_ "github.com/universalmacro/merchant/dao/repositories"
 	"github.com/universalmacro/merchant/ioc"
-	"github.com/universalmacro/merchant/services/models"
 )
 
 func GetMerchantService() *MerchantService {
@@ -32,15 +31,15 @@ type MerchantService struct {
 	subAccountRepository *repositories.SubAccountRepository
 }
 
-func (s *MerchantService) GetMerchant(merchantId uint) *models.Merchant {
+func (s *MerchantService) GetMerchant(merchantId uint) *Merchant {
 	merchant, _ := s.merchantRepository.GetById(merchantId)
 	if merchant == nil {
 		return nil
 	}
-	return &models.Merchant{Entity: merchant}
+	return &Merchant{Entity: merchant}
 }
 
-func (s *MerchantService) CreateMerchant(shortMerchantId, account, password string) *models.Merchant {
+func (s *MerchantService) CreateMerchant(shortMerchantId, account, password string) *Merchant {
 	merchant := &entities.Merchant{
 		ShortMerchantId: shortMerchantId,
 		Account:         account,
@@ -50,27 +49,27 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 	if ctx.RowsAffected == 0 {
 		return nil
 	}
-	return &models.Merchant{Entity: merchant}
+	return &Merchant{Entity: merchant}
 }
 
-func (s *MerchantService) ListMerchants(index, limit int64) dao.List[models.Merchant] {
+func (s *MerchantService) ListMerchants(index, limit int64) dao.List[Merchant] {
 	merchantList, _ := s.merchantRepository.Pagination(index, limit)
-	result := make([]models.Merchant, len(merchantList.Items))
+	result := make([]Merchant, len(merchantList.Items))
 	for i := range merchantList.Items {
-		result[i] = models.Merchant{Entity: &merchantList.Items[i]}
+		result[i] = Merchant{Entity: &merchantList.Items[i]}
 	}
-	var list dao.List[models.Merchant]
+	var list dao.List[Merchant]
 	list.Items = result
 	list.Pagination = merchantList.Pagination
 	return list
 }
 
-func (s *MerchantService) GetMerchantByAccount(account string) *models.Merchant {
+func (s *MerchantService) GetMerchantByAccount(account string) *Merchant {
 	merchant, _ := s.merchantRepository.GetByAccount(account)
 	if merchant == nil {
 		return nil
 	}
-	return &models.Merchant{Entity: merchant}
+	return &Merchant{Entity: merchant}
 }
 
 type Merchant struct {

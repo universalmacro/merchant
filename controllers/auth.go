@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/config"
 	"github.com/universalmacro/merchant/services"
-	"github.com/universalmacro/merchant/services/models"
 )
 
 var secretKey = config.GetString("node.secretKey")
@@ -17,7 +16,6 @@ type Headers struct {
 }
 
 func ApiKeyAuth(ctx *gin.Context) bool {
-	// return true
 	var headers Headers
 	ctx.ShouldBindHeader(&headers)
 	if secretKey != headers.ApiKey {
@@ -27,7 +25,7 @@ func ApiKeyAuth(ctx *gin.Context) bool {
 	return true
 }
 
-func getAccount(ctx *gin.Context) models.Account {
+func getAccount(ctx *gin.Context) services.Account {
 	var headers Headers
 	ctx.ShouldBindHeader(&headers)
 	if headers.Authorization == "" {

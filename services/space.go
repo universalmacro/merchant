@@ -8,7 +8,6 @@ import (
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
-	"github.com/universalmacro/merchant/services/models"
 )
 
 var spaceServiceSingleton = singleton.SingletonFactory(newSpaceService, singleton.Eager)
@@ -27,12 +26,12 @@ type SpaceService struct {
 	spaceRepository *repositories.SpaceRepository
 }
 
-func (self *SpaceService) GetSpace(spaceId uint) *models.Space {
+func (self *SpaceService) GetSpace(spaceId uint) *Space {
 	s, _ := self.spaceRepository.GetById(spaceId)
 	if s == nil {
 		return nil
 	}
-	return &models.Space{Space: s}
+	return &Space{Space: s}
 }
 
 type Space struct {

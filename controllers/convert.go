@@ -26,7 +26,7 @@ func ConvertSpace(m *models.Space) api.Space {
 
 func ConvertTable(t *models.Table) api.Table {
 	return api.Table{
-		Id:    utils.UintToString(t.ID),
-		Label: t.Label,
+		Id:    utils.UintToString(t.ID()),
+		Label: t.Label(),
 	}
 }

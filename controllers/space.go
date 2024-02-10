@@ -24,12 +24,52 @@ type SpaceController struct {
 
 // CreateTable implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) CreateTable(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	space := services.GetSpaceService().GetSpace(server.UintID(ctx, "id"))
+	if space == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	if !space.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	var createTableRequest api.SaveTableRequest
+	ctx.ShouldBindJSON(&createTableRequest)
+	table, err := space.CreateTable(createTableRequest.Label)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, ConvertTable(table))
 }
 
 // ListTables implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) ListTables(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	space := services.GetSpaceService().GetSpace(server.UintID(ctx, "id"))
+	if space == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	if !space.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	tables := space.ListTables()
+	apiTables := make([]api.Table, len(tables))
+	for i := range tables {
+		apiTables[i] = ConvertTable(&tables[i])
+	}
+	ctx.JSON(http.StatusOK, apiTables)
 }
 
 // CreateSpace implements merchantapiinterfaces.SpaceApi.

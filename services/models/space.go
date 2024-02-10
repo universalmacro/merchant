@@ -64,6 +64,30 @@ func (s *Space) CreateTable(label string) (*Table, error) {
 	return &Table{t}, nil
 }
 
+func (s *Space) GetTable(label string) *Table {
+	tableRepo := repositories.GetTableRepository()
+	table, _ := tableRepo.List(
+		dao.Where("space_id = ?", s.ID()),
+		dao.Where("label = ?", label),
+	)
+	if len(table) == 0 {
+		return nil
+	}
+	return &Table{&table[0]}
+}
+
+func (s *Space) ListTables() []Table {
+	tableRepo := repositories.GetTableRepository()
+	tables, _ := tableRepo.List(
+		dao.Where("space_id = ?", s.ID()),
+	)
+	result := make([]Table, len(tables))
+	for i := range tables {
+		result[i] = Table{&tables[i]}
+	}
+	return result
+}
+
 func (s *Space) CreateFood(name string, description string, price, fixedOffset *int64) {
 
 }

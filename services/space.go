@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 
-	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
@@ -72,10 +71,7 @@ func (s *Space) Delete() {
 
 func (s *Space) CreateTable(label string) (*Table, error) {
 	tableRepo := repositories.GetTableRepository()
-	table, _ := tableRepo.List(
-		dao.Where("space_id = ?", s.ID()),
-		dao.Where("label = ?", label),
-	)
+	table, _ := tableRepo.FindMany("space_id = ? AND label = ?", s.ID(), label)
 	if len(table) > 0 {
 		return nil, errors.New("tableLabel already exists")
 	}
@@ -89,23 +85,9 @@ func (s *Space) CreateTable(label string) (*Table, error) {
 	return &Table{t}, nil
 }
 
-func (s *Space) GetTable(label string) *Table {
-	tableRepo := repositories.GetTableRepository()
-	table, _ := tableRepo.List(
-		dao.Where("space_id = ?", s.ID()),
-		dao.Where("label = ?", label),
-	)
-	if len(table) == 0 {
-		return nil
-	}
-	return &Table{&table[0]}
-}
-
 func (s *Space) ListTables() []Table {
 	tableRepo := repositories.GetTableRepository()
-	tables, _ := tableRepo.List(
-		dao.Where("space_id = ?", s.ID()),
-	)
+	tables, _ := tableRepo.FindMany("space_id = ?", s.ID())
 	result := make([]Table, len(tables))
 	for i := range tables {
 		result[i] = Table{&tables[i]}

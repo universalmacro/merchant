@@ -17,10 +17,8 @@ type Merchant struct {
 	Description string `gorm:"type:varchar(255);"`
 }
 
-var merchantIdGenerator = snowflake.NewIdGenertor(0)
-
 func (a *Merchant) BeforeCreate(tx *gorm.DB) (err error) {
-	a.Model.ID = merchantIdGenerator.Uint()
+	a.Model.ID = snowflake.NewIdGenertor(0).Uint()
 	return err
 }
 

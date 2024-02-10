@@ -6,11 +6,18 @@ import (
 	"errors"
 
 	"github.com/universalmacro/common/data"
+	"github.com/universalmacro/common/snowflake"
+	"gorm.io/gorm"
 )
 
 type Table struct {
 	SpaceAsset
 	Label string
+}
+
+func (a *Table) BeforeCreate(tx *gorm.DB) (err error) {
+	a.Model.ID = snowflake.NewIdGenertor(0).Uint()
+	return err
 }
 
 type Food struct {

@@ -16,9 +16,7 @@ type Space struct {
 	Name       string `gorm:"type:varchar(255);"`
 }
 
-var spaceIdGenerator = snowflake.NewIdGenertor(0)
-
 func (a *Space) BeforeCreate(tx *gorm.DB) (err error) {
-	a.Model.ID = spaceIdGenerator.Uint()
+	a.Model.ID = snowflake.NewIdGenertor(0).Uint()
 	return err
 }

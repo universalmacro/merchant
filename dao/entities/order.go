@@ -27,6 +27,7 @@ type Food struct {
 	Price       int64
 	FixedOffset *int64
 	Image       string `gorm:"type:varchar(256)"`
+	Attributes  Attributes
 }
 
 type Option struct {

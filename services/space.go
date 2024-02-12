@@ -73,7 +73,7 @@ func (s *Space) CreateTable(label string) (*Table, error) {
 	tableRepo := repositories.GetTableRepository()
 	table, _ := tableRepo.FindMany("space_id = ? AND label = ?", s.ID(), label)
 	if len(table) > 0 {
-		return nil, errors.New("tableLabel already exists")
+		return nil, errors.New("table label already exists")
 	}
 	t := &entities.Table{
 		SpaceAsset: entities.SpaceAsset{
@@ -95,6 +95,18 @@ func (s *Space) ListTables() []Table {
 	return result
 }
 
-func (s *Space) CreateFood(name string, description string, price, fixedOffset *int64) {
-
+func (s *Space) CreateFood(name string, description string, price int64, fixedOffset *int64, image string, categories []string, attributes entities.Attributes) (*Food, error) {
+	f := &entities.Food{
+		SpaceAsset: entities.SpaceAsset{
+			SpaceID: s.ID(),
+		},
+		Name:        name,
+		Description: description,
+		Price:       price,
+		FixedOffset: fixedOffset,
+		Image:       image,
+		Attributes:  attributes,
+	}
+	repositories.GetFoodRepository().Save(f)
+	return &Food{f}, nil
 }

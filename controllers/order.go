@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/server"
 	api "github.com/universalmacro/merchant-api-interfaces"
@@ -44,7 +46,9 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 	}
 	var createFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&createFoodRequest)
-	// food, err := space.CreateFood(createFoodRequest.Name, createFoodRequest.Description, createFoodRequest.Price, createFoodRequest.FixedOffset)
+	fmt.Println(createFoodRequest)
+	// space.CreateFood()
+	// food, err := space.CreateFood(createFoodRequest.Name, createFoodRequest.Description, createFoodRequest.Price, createFoodRequest.FixedOffset, createFoodRequest.Image, *createFoodRequest.Categories)
 }
 
 // CreateOrder implements merchantapiinterfaces.OrderApi.

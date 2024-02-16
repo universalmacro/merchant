@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/universalmacro/common/fault"
 	"github.com/universalmacro/common/server"
 	api "github.com/universalmacro/merchant-api-interfaces"
 	"github.com/universalmacro/merchant/services"
@@ -17,6 +18,32 @@ func newMerchantController() *MerchantController {
 
 type MerchantController struct {
 	merchantService *services.MerchantService
+}
+
+// GetSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) GetSelfMerchantConfig(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// UpdateSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.
+func (*MerchantController) UpdateSelfMerchantConfig(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return
+	}
+	var request api.MerchantConfig
+	ctx.ShouldBindJSON(&request)
+	merchant := services.GetMerchantService().GetMerchant(account.MerchantId())
+	if !merchant.Granted(account) {
+		fault.GinHandler(ctx, fault.ErrPermissionDenied)
+		return
+	}
+	if request.Currency != nil {
+		merchant.SetCurrency(string(*request.Currency))
+	}
+	merchant.Submit()
+	ctx.JSON(http.StatusNoContent, request)
 }
 
 // DeleteSelfContactForm implements merchantapiinterfaces.MerchantApi.

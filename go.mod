@@ -1,12 +1,12 @@
 module github.com/universalmacro/merchant
 
-go 1.21.6
+go 1.22.0
 
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/universalmacro/common v0.0.0-20240206083632-a5eeed38221e
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240211031450-440f7c7f1850
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240216042441-651677d5c1df
 	gorm.io/gorm v1.25.5
 )
 

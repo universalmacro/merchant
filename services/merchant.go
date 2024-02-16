@@ -143,6 +143,15 @@ func (m *Merchant) CreateMember() {
 
 }
 
+func (m *Merchant) Currency() string {
+	return m.Entity.Currency
+}
+
+func (m *Merchant) SetCurrency(currency string) *Merchant {
+	m.Entity.Currency = currency
+	return m
+}
+
 func (m *Merchant) Granted(account Account) bool {
 	return m.ID() == account.MerchantId()
 }
@@ -172,6 +181,10 @@ func (m *Merchant) ListSpaces() dao.List[Space] {
 		spaces[i] = Space{&list.Items[i]}
 	}
 	return dao.List[Space]{Items: spaces, Pagination: list.Pagination}
+}
+
+func (m *Merchant) Submit() {
+	repositories.GetMerchantRepository().Update(m.Entity)
 }
 
 type SubAccount struct {

@@ -15,6 +15,7 @@ type Merchant struct {
 	*data.PhoneNumber
 	Name        string `gorm:"type:varchar(255);"`
 	Description string `gorm:"type:varchar(255);"`
+	Currency    string `gorm:"type:varchar(255);"`
 }
 
 func (a *Merchant) BeforeCreate(tx *gorm.DB) (err error) {

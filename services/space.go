@@ -95,6 +95,16 @@ func (s *Space) ListTables() []Table {
 	return result
 }
 
+func (s *Space) Foods() []Food {
+	foodRepo := repositories.GetFoodRepository()
+	foods, _ := foodRepo.FindMany("space_id = ?", s.ID())
+	result := make([]Food, len(foods))
+	for i := range foods {
+		result[i] = Food{&foods[i]}
+	}
+	return result
+}
+
 func (s *Space) CreateFood(name string, description string, price int64, fixedOffset *int64, image string, categories []string, attributes entities.Attributes) (*Food, error) {
 	f := &entities.Food{
 		SpaceAsset: entities.SpaceAsset{

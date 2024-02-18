@@ -5,8 +5,8 @@ go 1.22.0
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/universalmacro/common v0.0.0-20240206083632-a5eeed38221e
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240216042441-651677d5c1df
+	github.com/universalmacro/common v0.0.0-20240218050736-53f94621bbd2
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240217014843-2c6baa5302e0
 	gorm.io/gorm v1.25.5
 )
 

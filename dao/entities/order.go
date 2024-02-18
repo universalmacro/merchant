@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/data"
 	"github.com/universalmacro/common/snowflake"
 	"gorm.io/gorm"
@@ -27,6 +28,7 @@ type Food struct {
 	Price       int64
 	FixedOffset *int64
 	Image       string `gorm:"type:varchar(256)"`
+	Categories  dao.StringArray
 	Attributes  Attributes
 }
 

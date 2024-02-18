@@ -1,10 +1,17 @@
 package services
 
 import (
+	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
 )
+
+func NewFood() *Food {
+	return &Food{
+		Food: &entities.Food{},
+	}
+}
 
 type Food struct {
 	*entities.Food
@@ -25,6 +32,15 @@ func (f *Food) SetName(name string) *Food {
 
 func (f *Food) Name() string {
 	return f.Food.Name
+}
+
+func (f *Food) Categories() []string {
+	return f.Food.Categories
+}
+
+func (f *Food) SetCategories(categories []string) *Food {
+	f.Food.Categories = categories
+	return f
 }
 
 func (f *Food) SetDescription(description string) *Food {
@@ -72,9 +88,10 @@ func (f *Food) Attributes() entities.Attributes {
 	return f.Food.Attributes
 }
 
-func (f *Food) AddAttribute(label string, options ...Option) *Food {
+func (f *Food) AddAttribute(label string, options ...entities.Option) *Food {
 	f.Food.Attributes = append(f.Food.Attributes, entities.Attribute{
-		Label: label,
+		Label:   label,
+		Options: options,
 	})
 	return f
 }
@@ -83,6 +100,12 @@ func (f *Food) Submit() *Food {
 	repo := repositories.GetFoodRepository()
 	repo.Save(f.Food)
 	return f
+}
+
+func (r *Food) Create() *Food {
+	repo := repositories.GetFoodRepository()
+	repo.Create(r.Food)
+	return r
 }
 
 func (f *Food) Delete() {
@@ -94,16 +117,30 @@ func (f *Food) Space() *Space {
 	return newSpaceService().GetSpace(f.SpaceID)
 }
 
-type Option struct {
-	Label   string   `json:"label"`
-	Options []Option `json:"options"`
+func (f *Food) Granted(account Account) bool {
+	return f.Space().Granted(account)
 }
 
-func (o *Option) SetLabel(label string) *Option {
-	o.Label = label
-	return o
+var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)
+
+func GetFoodService() *FoodService {
+	return foodServiceSingleton.Get()
 }
 
-func (o *Option) AddOptions() string {
-	return o.Label
+func newFoodService() *FoodService {
+	return &FoodService{
+		foodRepository: repositories.GetFoodRepository(),
+	}
+}
+
+type FoodService struct {
+	foodRepository *repositories.FoodRepository
+}
+
+func (self *FoodService) GetById(id uint) *Food {
+	f, _ := self.foodRepository.GetById(id)
+	if f == nil {
+		return nil
+	}
+	return &Food{Food: f}
 }

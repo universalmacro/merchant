@@ -136,12 +136,12 @@ func (self *SpaceController) ListSpaces(ctx *gin.Context) {
 		return
 	}
 	spaces := merchant.ListSpaces()
-	apiSpaces := make([]api.Space, len(spaces.Items))
-	for i := range spaces.Items {
-		apiSpaces[i] = ConvertSpace(&spaces.Items[i])
+	apiSpaces := make([]api.Space, len(spaces))
+	for i := range spaces {
+		apiSpaces[i] = ConvertSpace(&spaces[i])
 	}
 	ctx.JSON(http.StatusOK,
-		dao.List[api.Space]{Items: apiSpaces, Pagination: spaces.Pagination})
+		dao.List[api.Space]{Items: apiSpaces})
 }
 
 // UpdateSpace implements merchantapiinterfaces.SpaceApi.

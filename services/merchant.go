@@ -174,13 +174,13 @@ func (m *Merchant) CreateSpace(name string) *Space {
 	return &Space{entity}
 }
 
-func (m *Merchant) ListSpaces() dao.List[Space] {
-	list, _ := repositories.GetSpaceRepository().Pagination(0, 10000)
-	spaces := make([]Space, len(list.Items))
-	for i := range list.Items {
-		spaces[i] = Space{&list.Items[i]}
+func (m *Merchant) ListSpaces() []Space {
+	list, _ := repositories.GetSpaceRepository().FindMany("merchant_id = ?", m.ID())
+	spaces := make([]Space, len(list))
+	for i := range list {
+		spaces[i] = Space{&list[i]}
 	}
-	return dao.List[Space]{Items: spaces, Pagination: list.Pagination}
+	return spaces
 }
 
 func (m *Merchant) Submit() {

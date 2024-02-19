@@ -105,18 +105,8 @@ func (s *Space) Foods() []Food {
 	return result
 }
 
-func (s *Space) CreateFood(name string, description string, price int64, fixedOffset *int64, image string, categories []string, attributes entities.Attributes) (*Food, error) {
-	f := &entities.Food{
-		SpaceAsset: entities.SpaceAsset{
-			SpaceID: s.ID(),
-		},
-		Name:        name,
-		Description: description,
-		Price:       price,
-		FixedOffset: fixedOffset,
-		Image:       image,
-		Attributes:  attributes,
-	}
-	repositories.GetFoodRepository().Save(f)
-	return &Food{f}, nil
+func (s *Space) CreateFood(food *Food) (*Food, error) {
+	food.SpaceID = s.ID()
+	food.Create()
+	return food, nil
 }

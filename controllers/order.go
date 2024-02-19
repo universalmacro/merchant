@@ -47,7 +47,8 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 	}
 	var createFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&createFoodRequest)
-	food := updateFood(createFoodRequest, services.NewFood()).Create()
+	food := updateFood(createFoodRequest, services.NewFood())
+	space.CreateFood(food)
 	ctx.JSON(201, ConvertFood(food))
 }
 

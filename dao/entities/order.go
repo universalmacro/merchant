@@ -32,6 +32,24 @@ type Food struct {
 	Attributes  Attributes
 }
 
+func (a *Food) BeforeCreate(tx *gorm.DB) (err error) {
+	a.Model.ID = snowflake.NewIdGenertor(0).Uint()
+	return err
+}
+
+func (Food) GormDataType() string {
+	return "JSON"
+}
+
+func (s *Food) Scan(value any) error {
+	return json.Unmarshal(value.([]byte), s)
+}
+
+func (s Food) Value() (driver.Value, error) {
+	b, err := json.Marshal(s)
+	return b, err
+}
+
 type Option struct {
 	Label string `json:"label"`
 	Extra int64  `json:"extra"`

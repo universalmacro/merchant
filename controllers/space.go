@@ -23,18 +23,30 @@ type SpaceController struct {
 }
 
 // CreatePrinter implements merchantapiinterfaces.SpaceApi.
-func (*SpaceController) CreatePrinter(ctx *gin.Context) {
-	panic("unimplemented")
+func (self *SpaceController) CreatePrinter(ctx *gin.Context) {
+	account := getAccount(ctx)
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
+		return
+	}
 }
 
 // DeletePrinter implements merchantapiinterfaces.SpaceApi.
-func (*SpaceController) DeletePrinter(ctx *gin.Context) {
-	panic("unimplemented")
+func (self *SpaceController) DeletePrinter(ctx *gin.Context) {
+	account := getAccount(ctx)
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
+		return
+	}
 }
 
 // ListPrinters implements merchantapiinterfaces.SpaceApi.
-func (*SpaceController) ListPrinters(ctx *gin.Context) {
-	panic("unimplemented")
+func (self *SpaceController) ListPrinters(ctx *gin.Context) {
+	account := getAccount(ctx)
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
+		return
+	}
 }
 
 // UpdatePrinter implements merchantapiinterfaces.SpaceApi.
@@ -43,19 +55,14 @@ func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
 }
 
 // CreateTable implements merchantapiinterfaces.SpaceApi.
-func (*SpaceController) CreateTable(ctx *gin.Context) {
+func (self *SpaceController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
 		return
 	}
-	space := services.GetSpaceService().GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(account) {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	var createTableRequest api.SaveTableRequest
@@ -69,19 +76,10 @@ func (*SpaceController) CreateTable(ctx *gin.Context) {
 }
 
 // ListTables implements merchantapiinterfaces.SpaceApi.
-func (*SpaceController) ListTables(ctx *gin.Context) {
+func (self *SpaceController) ListTables(ctx *gin.Context) {
 	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-	space := services.GetSpaceService().GetSpace(server.UintID(ctx, "id"))
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
 	if space == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(account) {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	tables := space.ListTables()
@@ -113,17 +111,8 @@ func (self *SpaceController) CreateSpace(ctx *gin.Context) {
 // DeleteSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) DeleteSpace(ctx *gin.Context) {
 	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
 	if space == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(account) {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	space.Delete()
@@ -166,22 +155,30 @@ func (self *SpaceController) ListSpaces(ctx *gin.Context) {
 
 // UpdateSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) UpdateSpace(ctx *gin.Context) {
-	admin := getAccount(ctx)
-	if admin == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	account := getAccount(ctx)
+	space := self.grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
 		return
 	}
 	var updateSpaceRequest api.SaveSpaceRequest
 	ctx.ShouldBindJSON(&updateSpaceRequest)
-	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
-	if space == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(admin) {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
-		return
-	}
 	ctx.JSON(http.StatusOK,
 		ConvertSpace(space.SetName(updateSpaceRequest.Name).Submit()))
+}
+
+func (self *SpaceController) grantedSpace(ctx *gin.Context, spaceId uint, account services.Account) *services.Space {
+	space := self.spaceService.GetSpace(spaceId)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return nil
+	}
+	if space == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return nil
+	}
+	if !space.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return nil
+	}
+	return space
 }

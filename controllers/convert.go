@@ -42,6 +42,7 @@ func ConvertFood(f *services.Food) api.Food {
 		Price:       f.Price(),
 		Attributes:  ConvertFoodAttributes(f.Attributes()),
 		FixedOffset: f.FixedOffset(),
+		Status:      api.FoodStatus(f.Status()),
 	}
 }
 

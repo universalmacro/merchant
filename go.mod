@@ -6,7 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/universalmacro/common v0.0.0-20240218073011-42551a92e2ff
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240219082102-f8ef400c3711
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240219134627-22a0c74c3530
 	gorm.io/gorm v1.25.5
 )
 

@@ -167,6 +167,7 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 		return
 	}
 	var updateFoodRequest api.SaveFoodRequest
+	ctx.ShouldBindJSON(&updateFoodRequest)
 	updateFood(updateFoodRequest, food).Submit()
 	ctx.JSON(200, ConvertFood(food))
 }
@@ -233,7 +234,11 @@ func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) *servi
 		saveFoodRequest.FixedOffset).SetImage(
 		saveFoodRequest.Image).SetCategories(
 		saveFoodRequest.Categories)
+	if saveFoodRequest.Status != nil {
+		food.SetStatus(string(*saveFoodRequest.Status))
+	}
 	attributes := saveFoodRequest.Attributes
+	food.SetAttributes([]entities.Attribute{})
 	for i := range attributes {
 		if len(attributes[i].Options) == 0 {
 			continue

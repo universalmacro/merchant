@@ -30,6 +30,7 @@ type Food struct {
 	Image       string `gorm:"type:varchar(256)"`
 	Categories  dao.StringArray
 	Attributes  Attributes
+	Status      string `gorm:"type:varchar(64)"`
 }
 
 func (a *Food) BeforeCreate(tx *gorm.DB) (err error) {
@@ -114,4 +115,11 @@ func (s *Attributes) Scan(value any) error {
 func (s Attributes) Value() (driver.Value, error) {
 	b, err := json.Marshal(s)
 	return b, err
+}
+
+type Printer struct {
+	SpaceAsset
+	Name string
+	Sn   string `gorm:"type:varchar(64)"`
+	Type string `gorm:"type:varchar(64)"`
 }

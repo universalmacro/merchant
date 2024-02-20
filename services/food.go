@@ -34,6 +34,15 @@ func (f *Food) Name() string {
 	return f.Food.Name
 }
 
+func (f *Food) Status() string {
+	return f.Food.Status
+}
+
+func (f *Food) SetStatus(status string) *Food {
+	f.Food.Status = status
+	return f
+}
+
 func (f *Food) Categories() []string {
 	return f.Food.Categories
 }

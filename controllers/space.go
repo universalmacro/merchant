@@ -22,6 +22,26 @@ type SpaceController struct {
 	merchantService *services.MerchantService
 }
 
+// CreatePrinter implements merchantapiinterfaces.SpaceApi.
+func (*SpaceController) CreatePrinter(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// DeletePrinter implements merchantapiinterfaces.SpaceApi.
+func (*SpaceController) DeletePrinter(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// ListPrinters implements merchantapiinterfaces.SpaceApi.
+func (*SpaceController) ListPrinters(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// UpdatePrinter implements merchantapiinterfaces.SpaceApi.
+func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
 // CreateTable implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)

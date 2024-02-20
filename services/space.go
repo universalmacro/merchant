@@ -110,3 +110,25 @@ func (s *Space) CreateFood(food *Food) (*Food, error) {
 	food.Create()
 	return food, nil
 }
+
+func (s *Space) CreatePrinter(name, sn, printerType string) *Printer {
+	printer := &entities.Printer{
+		SpaceAsset: entities.SpaceAsset{
+			SpaceID: s.ID(),
+		},
+		Name: name,
+		Sn:   sn,
+		Type: printerType,
+	}
+	repositories.GetPrinterRepository().Save(printer)
+	return &Printer{printer}
+}
+
+func (s *Space) ListPrinters() []Printer {
+	printers, _ := repositories.GetPrinterRepository().FindMany("space_id = ?", s.ID())
+	result := make([]Printer, len(printers))
+	for i := range printers {
+		result[i] = Printer{&printers[i]}
+	}
+	return result
+}

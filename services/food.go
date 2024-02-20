@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
@@ -97,12 +99,24 @@ func (f *Food) Attributes() entities.Attributes {
 	return f.Food.Attributes
 }
 
-func (f *Food) AddAttribute(label string, options ...entities.Option) *Food {
+func (f *Food) AddAttribute(label string, options ...entities.Option) (*Food, error) {
+	for _, attr := range f.Food.Attributes {
+		if attr.Label == label {
+			return nil, errors.New("attribute label duplicated")
+		}
+	}
+	optionsMap := make(map[string]struct{})
+	for _, option := range options {
+		if _, ok := optionsMap[option.Label]; ok {
+			return nil, errors.New(label + " attribute option " + option.Label + " label duplicated")
+		}
+		optionsMap[option.Label] = struct{}{}
+	}
 	f.Food.Attributes = append(f.Food.Attributes, entities.Attribute{
 		Label:   label,
 		Options: options,
 	})
-	return f
+	return f, nil
 }
 
 func (f *Food) Submit() *Food {

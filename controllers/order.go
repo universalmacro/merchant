@@ -47,7 +47,11 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 	}
 	var createFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&createFoodRequest)
-	food := updateFood(createFoodRequest, services.NewFood())
+	food, err := updateFood(createFoodRequest, services.NewFood())
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 	space.CreateFood(food)
 	ctx.JSON(201, ConvertFood(food))
 }
@@ -168,7 +172,12 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 	}
 	var updateFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&updateFoodRequest)
-	updateFood(updateFoodRequest, food).Submit()
+	_, err := updateFood(updateFoodRequest, food)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	food.Submit()
 	ctx.JSON(200, ConvertFood(food))
 }
 
@@ -226,7 +235,7 @@ func (self *OrderController) UpdateTable(ctx *gin.Context) {
 	table.SetLabel(updateTableRequest.Label).Submit()
 }
 
-func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) *services.Food {
+func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {
 	food.SetName(
 		saveFoodRequest.Name).SetDescription(
 		saveFoodRequest.Description).SetPrice(
@@ -254,7 +263,10 @@ func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) *servi
 				Extra: extra,
 			}
 		}
-		food.AddAttribute(attributes[i].Label, options...)
+		_, err := food.AddAttribute(attributes[i].Label, options...)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return food
+	return food, nil
 }

@@ -116,10 +116,3 @@ func (s Attributes) Value() (driver.Value, error) {
 	b, err := json.Marshal(s)
 	return b, err
 }
-
-type Printer struct {
-	SpaceAsset
-	Name string
-	Sn   string `gorm:"type:varchar(64)"`
-	Type string `gorm:"type:varchar(64)"`
-}

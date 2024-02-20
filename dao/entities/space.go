@@ -16,6 +16,13 @@ type Space struct {
 	Name       string `gorm:"type:varchar(255);"`
 }
 
+func (self SpaceAsset) Granted(space *Space) bool {
+	if space == nil {
+		return false
+	}
+	return self.SpaceID == space.ID
+}
+
 func (a *Space) BeforeCreate(tx *gorm.DB) (err error) {
 	a.Model.ID = snowflake.NewIdGenertor(0).Uint()
 	return err

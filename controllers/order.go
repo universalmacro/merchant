@@ -259,6 +259,7 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 
 // UpdateFoodImage implements merchantapiinterfaces.OrderApi.
 func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
+	// TODO: implement
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
@@ -274,9 +275,6 @@ func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
 		ctx.JSON(403, gin.H{"error": "forbidden"})
 		return
 	}
-
-	// file, _ := ctx.FormFile("file")
-	// url := item.UploadImage(file)
 }
 
 // CreateTable implements merchantapiinterfaces.OrderApi.

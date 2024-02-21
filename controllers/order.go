@@ -25,13 +25,8 @@ type OrderController struct {
 }
 
 // ListFoodCategories implements merchantapiinterfaces.OrderApi.
-func (*OrderController) ListFoodCategories(ctx *gin.Context) {
-	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
-		return
-	}
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+func (self *OrderController) ListFoodCategories(ctx *gin.Context) {
+	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
 		return
 	}

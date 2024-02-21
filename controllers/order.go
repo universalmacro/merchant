@@ -59,17 +59,8 @@ func (*OrderController) CancelOrder(ctx *gin.Context) {
 // CreateFood implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) CreateFood(ctx *gin.Context) {
 	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
-		return
-	}
-	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
+	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
 		return
 	}
 	var createFoodRequest api.SaveFoodRequest
@@ -232,18 +223,8 @@ func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
 // CreateTable implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
-		return
-	}
-	id := server.UintID(ctx, "id")
-	space := self.spaceService.GetSpace(id)
+	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
 		return
 	}
 	var createTableRequest api.SaveTableRequest

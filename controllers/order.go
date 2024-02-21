@@ -28,6 +28,7 @@ type OrderController struct {
 func (self *OrderController) ListFoodCategories(ctx *gin.Context) {
 	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
 	if space == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
 		return
 	}
 	ctx.JSON(200, space.FoodCategories())

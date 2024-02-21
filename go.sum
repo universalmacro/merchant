@@ -152,6 +152,8 @@ github.com/universalmacro/merchant-api-interfaces v0.0.0-20240219134627-22a0c74c
 github.com/universalmacro/merchant-api-interfaces v0.0.0-20240219134627-22a0c74c3530/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
 github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221011025-981db8b828ca h1:B5lwqHbG6QVgrhzPg7thdmJ344tH+uAGmVnQ9a/zK84=
 github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221011025-981db8b828ca/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221030634-4e90eac5b69e h1:Rnh6pdEgHcq9UEbgKRBJ8TTMR+WzIhWr2z+dm+Wej2k=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221030634-4e90eac5b69e/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 golang.org/x/arch v0.0.0-20210923205945-b76863e36670/go.mod h1:5om86z9Hs0C8fWVUuoMHwpExlXzs5Tkyp9hOrfG7pp8=

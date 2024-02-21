@@ -24,6 +24,21 @@ type SpaceController struct {
 	printerService  *services.PrinterService
 }
 
+// GetPrinter implements merchantapiinterfaces.SpaceApi.
+func (*SpaceController) GetPrinter(ctx *gin.Context) {
+	account := getAccount(ctx)
+	printer := services.GetPrinterService().GetPrinter(server.UintID(ctx, "printerId"))
+	if printer == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	if !printer.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	ctx.JSON(http.StatusOK, ConvertPrinter(printer))
+}
+
 // CreatePrinter implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) CreatePrinter(ctx *gin.Context) {
 	account := getAccount(ctx)
@@ -31,15 +46,26 @@ func (self *SpaceController) CreatePrinter(ctx *gin.Context) {
 	if space == nil {
 		return
 	}
+	var createPrinterRequest api.SavePrinter
+	ctx.ShouldBindJSON(&createPrinterRequest)
+	printer := space.CreatePrinter(createPrinterRequest.Name, createPrinterRequest.Sn, string(createPrinterRequest.Type))
+	ctx.JSON(http.StatusCreated, ConvertPrinter(printer))
 }
 
 // DeletePrinter implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) DeletePrinter(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
-	if space == nil {
+	printer := self.printerService.GetPrinter(server.UintID(ctx, "printerId"))
+	if printer == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
+	if !printer.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	printer.Delete()
+	ctx.JSON(http.StatusNoContent, nil)
 }
 
 // ListPrinters implements merchantapiinterfaces.SpaceApi.
@@ -49,11 +75,33 @@ func (self *SpaceController) ListPrinters(ctx *gin.Context) {
 	if space == nil {
 		return
 	}
+	printers := space.ListPrinters()
+	apiPrinters := make([]api.Printer, len(printers))
+	for i := range printers {
+		apiPrinters[i] = ConvertPrinter(&printers[i])
+	}
+	ctx.JSON(http.StatusOK, apiPrinters)
 }
 
 // UpdatePrinter implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	printer := services.GetPrinterService().GetPrinter(server.UintID(ctx, "printerId"))
+	if printer == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	if !printer.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	var updatePrinterRequest api.SavePrinter
+	ctx.ShouldBindJSON(&updatePrinterRequest)
+	printer.Name = updatePrinterRequest.Name
+	printer.Sn = updatePrinterRequest.Sn
+	printer.Type = string(updatePrinterRequest.Type)
+	printer.Submit()
+	ctx.JSON(http.StatusOK, ConvertPrinter(printer))
 }
 
 // CreateTable implements merchantapiinterfaces.SpaceApi.

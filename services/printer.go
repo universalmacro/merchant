@@ -2,12 +2,25 @@ package services
 
 import (
 	"github.com/universalmacro/common/singleton"
+	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
 type Printer struct {
 	*entities.Printer
+}
+
+func (self *Printer) ID() uint {
+	return self.Printer.ID
+}
+
+func (self *Printer) StringID() string {
+	return utils.UintToString(self.ID())
+}
+
+func (self *Printer) Model() string {
+	return self.Printer.Model
 }
 
 func (self *Printer) Delete() {
@@ -24,6 +37,11 @@ func (self *Printer) Space() *Space {
 
 func (self *Printer) Granted(account Account) bool {
 	return self.Space().Granted(account)
+}
+
+func (self *Printer) Submit() *Printer {
+	repositories.GetPrinterRepository().Save(self.Printer)
+	return self
 }
 
 func GetPrinterService() *PrinterService {

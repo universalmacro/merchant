@@ -58,3 +58,13 @@ func ConvertFoodAttributes(f entities.Attributes) []api.FoodAttribute {
 	}
 	return attributes
 }
+
+func ConvertPrinter(p *services.Printer) api.Printer {
+	return api.Printer{
+		Id:    p.StringID(),
+		Name:  p.Name,
+		Sn:    p.Sn,
+		Type:  api.PrinterType(p.Type),
+		Model: api.PrinterModel(p.Printer.Model),
+	}
+}

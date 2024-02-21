@@ -156,6 +156,16 @@ github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221030634-4e90eac5
 github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221030634-4e90eac5b69e/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
 github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221030913-5b2994f5c84b h1:IeEm/OTAOQeEvHnKGZfb11LODZeBdi4ayPnkVLO8EPw=
 github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221030913-5b2994f5c84b/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221095845-23450c47ba67 h1:QtB6wixWbAt/zf/q/kAWBCiidQ13nBH8BGQPpVVDIAY=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221095845-23450c47ba67/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221100240-a8d2dc2b09e7 h1:j1BBsMv7iTrcBK+Bm9ybEON82hv3DH/EKWcUTRZuQfY=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221100240-a8d2dc2b09e7/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221103317-324605bed0f2 h1:aMDw49qIMOdbs7v1jDA4CKf8gkXYwFeFLwSo8RmTgMs=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221103317-324605bed0f2/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221103853-d30cfef7d662 h1:YwNPM9ocBq0xSYnA4EtW2gNC9Xvc2oJrK5AuE3U4VJ4=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221103853-d30cfef7d662/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221105027-098ba9a4c298 h1:s1qaAZnbg/sJZMZOqp55nsre20hStsKZXW2dtcFP+no=
+github.com/universalmacro/merchant-api-interfaces v0.0.0-20240221105027-098ba9a4c298/go.mod h1:EjtE4AjOAtGNbqRPy5jV+SkfoTyhvOJ1UYCq+dXNRrQ=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 golang.org/x/arch v0.0.0-20210923205945-b76863e36670/go.mod h1:5om86z9Hs0C8fWVUuoMHwpExlXzs5Tkyp9hOrfG7pp8=

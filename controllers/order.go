@@ -48,6 +48,7 @@ func (*OrderController) UpdateFoodCategories(ctx *gin.Context) {
 	var updateFoodCategoriesRequest []string
 	ctx.ShouldBindJSON(&updateFoodCategoriesRequest)
 	space.SetFoodCategories(updateFoodCategoriesRequest...)
+	space.Submit()
 	ctx.JSON(200, space.FoodCategories())
 }
 

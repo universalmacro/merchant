@@ -106,8 +106,8 @@ func (s *Space) Foods() []Food {
 	return result
 }
 
-func (s *Space) CreateFood(food *Food) (*Food, error) {
-	food.SpaceID = s.ID()
+func (self *Space) CreateFood(food *Food) (*Food, error) {
+	food.SpaceID = self.ID()
 	food.Create()
 	return food, nil
 }

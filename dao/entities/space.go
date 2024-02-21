@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/snowflake"
 	"gorm.io/gorm"
 )
@@ -12,8 +13,9 @@ type SpaceAsset struct {
 
 type Space struct {
 	gorm.Model
-	MerchantId uint   `gorm:"index"`
-	Name       string `gorm:"type:varchar(255);"`
+	MerchantId     uint   `gorm:"index"`
+	Name           string `gorm:"type:varchar(255);"`
+	FoodCategories dao.StringArray
 }
 
 func (self SpaceAsset) Granted(space *Space) bool {

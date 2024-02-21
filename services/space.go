@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
@@ -131,4 +132,22 @@ func (s *Space) ListPrinters() []Printer {
 		result[i] = Printer{&printers[i]}
 	}
 	return result
+}
+
+func (self *Space) FoodCategories() []string {
+	return self.Space.FoodCategories
+}
+
+func (self *Space) SetFoodCategories(categories ...string) *Space {
+	mapCategories := make(map[string]struct{})
+	var foodCategories dao.StringArray
+	for _, category := range categories {
+		if _, ok := mapCategories[category]; ok {
+			continue
+		}
+		mapCategories[category] = struct{}{}
+		foodCategories = append(foodCategories, category)
+	}
+	self.Space.FoodCategories = foodCategories
+	return self
 }

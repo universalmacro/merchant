@@ -26,16 +26,15 @@ func (self *Printer) Granted(account Account) bool {
 	return self.Space().Granted(account)
 }
 
-func GetPrinterService() *MerchantService {
-	return merchantSingleton.Get()
+func GetPrinterService() *PrinterService {
+	return printerServiceSingleton.Get()
 }
 
-var printerSingleton = singleton.SingletonFactory(newMerchantService, singleton.Lazy)
+var printerServiceSingleton = singleton.SingletonFactory(newPrinterService, singleton.Lazy)
 
-func newPrinterService() *MerchantService {
-	return &MerchantService{
-		merchantRepository:   repositories.GetMerchantRepository(),
-		subAccountRepository: repositories.GetSubAccountRepository(),
+func newPrinterService() *PrinterService {
+	return &PrinterService{
+		printerRepository: repositories.GetPrinterRepository(),
 	}
 }
 

@@ -24,6 +24,37 @@ type OrderController struct {
 	foodService     *services.FoodService
 }
 
+// ListFoodCategories implements merchantapiinterfaces.OrderApi.
+func (*OrderController) ListFoodCategories(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
+		return
+	}
+	ctx.JSON(200, space.FoodCategories())
+}
+
+// UpdateFoodCategories implements merchantapiinterfaces.OrderApi.
+func (*OrderController) UpdateFoodCategories(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
+		return
+	}
+	var updateFoodCategoriesRequest []string
+	ctx.ShouldBindJSON(&updateFoodCategoriesRequest)
+	space.SetFoodCategories(updateFoodCategoriesRequest...)
+	ctx.JSON(200, space.FoodCategories())
+}
+
 // CancelOrder implements merchantapiinterfaces.OrderApi.
 func (*OrderController) CancelOrder(ctx *gin.Context) {
 	panic("unimplemented")
@@ -160,8 +191,7 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
-	id := server.UintID(ctx, "id")
-	food := self.foodService.GetById(id)
+	food := self.foodService.GetById(server.UintID(ctx, "id"))
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -183,7 +213,24 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 
 // UpdateFoodImage implements merchantapiinterfaces.OrderApi.
 func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	id := server.UintID(ctx, "id")
+	food := services.GetFoodService().GetById(id)
+	if food == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	if !food.Granted(account) {
+		ctx.JSON(403, gin.H{"error": "forbidden"})
+		return
+	}
+
+	// file, _ := ctx.FormFile("file")
+	// url := item.UploadImage(file)
 }
 
 // CreateTable implements merchantapiinterfaces.OrderApi.
@@ -242,7 +289,7 @@ func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*serv
 		saveFoodRequest.Price).SetFixedOffset(
 		saveFoodRequest.FixedOffset).SetImage(
 		saveFoodRequest.Image).SetCategories(
-		saveFoodRequest.Categories)
+		saveFoodRequest.Categories...)
 	if saveFoodRequest.Status != nil {
 		food.SetStatus(string(*saveFoodRequest.Status))
 	}

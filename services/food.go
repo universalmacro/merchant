@@ -2,7 +2,9 @@ package services
 
 import (
 	"errors"
+	"mime/multipart"
 
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
@@ -49,8 +51,17 @@ func (f *Food) Categories() []string {
 	return f.Food.Categories
 }
 
-func (f *Food) SetCategories(categories []string) *Food {
-	f.Food.Categories = categories
+func (f *Food) SetCategories(categories ...string) *Food {
+	mapCategories := make(map[string]struct{})
+	var foodCategories dao.StringArray
+	for _, category := range categories {
+		if _, ok := mapCategories[category]; ok {
+			continue
+		}
+		mapCategories[category] = struct{}{}
+		foodCategories = append(foodCategories, category)
+	}
+	f.Food.Categories = foodCategories
 	return f
 }
 
@@ -142,6 +153,34 @@ func (f *Food) Space() *Space {
 
 func (f *Food) Granted(account Account) bool {
 	return f.Space().Granted(account)
+}
+
+func (f *Food) UpdateImage(file *multipart.FileHeader) *Food {
+	// configClient := node.NewNodeConfigClient(
+	// 	config.GetString("core.apiUrl"),
+	// 	config.GetString("node.id"),
+	// 	config.GetString("node.secretKey"))
+	// config := configClient.GetConfig()
+	// imageId := snowflake.NewIdGenertor(0).Uint()
+	// path := "foods/" + utils.UintToString(imageId)
+	// u, _ := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", Bucket, CosClient.Region))
+	// b := &cos.BaseURL{BucketURL: u}
+	// client := cos.NewClient(b, &http.Client{
+	// 	Transport: &cos.AuthorizationTransport{
+	// 		SecretID:  config,
+	// 		SecretKey: CosClient.SecretKey,
+	// 	},
+	// })
+	// f, _ := file.Open()
+	// client.Object.Put(context.Background(), path, f,
+	// 	&cos.ObjectPutOptions{
+	// 		ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
+	// 			ContentType: file.Header.Get("content-type"),
+	// 		},
+	// 	})
+	// url := fmt.Sprintf("https://%s.cos.%s.myqcloud.com/%s", Bucket, CosClient.Region, path)
+	// i.SetImage(url)
+	return f
 }
 
 var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)

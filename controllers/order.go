@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/server"
+	"github.com/universalmacro/common/utils"
 	api "github.com/universalmacro/merchant-api-interfaces"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/services"
@@ -22,6 +23,63 @@ type OrderController struct {
 	spaceService    *services.SpaceService
 	tableService    *services.TableService
 	foodService     *services.FoodService
+}
+
+// ListFoodPrinters implements merchantapiinterfaces.OrderApi.
+func (self *OrderController) ListFoodPrinters(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	id := server.UintID(ctx, "id")
+	food := self.foodService.GetById(id)
+	if food == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	if !food.Granted(account) {
+		ctx.JSON(403, gin.H{"error": "forbidden"})
+		return
+	}
+	printers := food.Printers()
+	result := make([]api.Printer, len(printers))
+	for i := range printers {
+		result[i] = ConvertPrinter(&printers[i])
+	}
+	ctx.JSON(200, result)
+}
+
+// UpdateFoodPrinters implements merchantapiinterfaces.OrderApi.
+func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	id := server.UintID(ctx, "id")
+	food := services.GetFoodService().GetById(id)
+	if food == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	if !food.Granted(account) {
+		ctx.JSON(403, gin.H{"error": "forbidden"})
+		return
+	}
+	var updateFoodPrintersRequest []string
+	ctx.ShouldBindJSON(&updateFoodPrintersRequest)
+	var printerIds []uint
+	for _, printerId := range updateFoodPrintersRequest {
+		printerIds = append(printerIds, utils.StringToUint(printerId))
+	}
+	food.SetPrinters(printerIds...).Submit()
+	printers := food.Printers()
+	result := make([]api.Printer, len(printers))
+	for i := range printers {
+		result[i] = ConvertPrinter(&printers[i])
+	}
+	ctx.JSON(200, result)
 }
 
 // ListFoodCategories implements merchantapiinterfaces.OrderApi.

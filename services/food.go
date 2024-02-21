@@ -110,6 +110,22 @@ func (f *Food) Attributes() entities.Attributes {
 	return f.Food.Attributes
 }
 
+func (f *Food) SetPrinters(printers ...uint) *Food {
+	f.Food.Printers = printers
+	return f
+}
+
+func (f *Food) Printers() []Printer {
+	var printers []Printer
+	for _, printerId := range f.Food.Printers {
+		printer := GetPrinterService().GetPrinter(printerId)
+		if printer != nil {
+			printers = append(printers, *printer)
+		}
+	}
+	return printers
+}
+
 func (f *Food) AddAttribute(label string, options ...entities.Option) (*Food, error) {
 	for _, attr := range f.Food.Attributes {
 		if attr.Label == label {

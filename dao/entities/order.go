@@ -31,6 +31,7 @@ type Food struct {
 	Categories  dao.StringArray
 	Attributes  Attributes
 	Status      string `gorm:"type:varchar(64)"`
+	Printers    dao.UintArray
 }
 
 func (a *Food) BeforeCreate(tx *gorm.DB) (err error) {

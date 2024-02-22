@@ -114,7 +114,8 @@ func (f *Food) SetPrinters(printers ...uint) *Food {
 	var printerIds []uint
 	printerService := GetPrinterService()
 	for _, printerId := range printers {
-		if printerService.GetPrinter(printerId) == nil {
+		printer := printerService.GetPrinter(printerId)
+		if printer == nil || printer.SpaceID() != f.SpaceID {
 			continue
 		}
 		printerIds = append(printerIds, printerId)

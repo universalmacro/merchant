@@ -111,7 +111,15 @@ func (f *Food) Attributes() entities.Attributes {
 }
 
 func (f *Food) SetPrinters(printers ...uint) *Food {
-	f.Food.Printers = printers
+	var printerIds []uint
+	printerService := GetPrinterService()
+	for _, printerId := range printers {
+		if printerService.GetPrinter(printerId) == nil {
+			continue
+		}
+		printerIds = append(printerIds, printerId)
+	}
+	f.Food.Printers = printerIds
 	return f
 }
 

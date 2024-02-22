@@ -125,7 +125,6 @@ func (c *MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
 	if !ApiKeyAuth(ctx) {
 		return
 	}
-
 	merchant.UpdatePassword(request.Password)
 	ctx.JSON(http.StatusNoContent, nil)
 }

@@ -36,7 +36,7 @@ func (self *Printer) Granted(account Account) bool {
 }
 
 func (self *Printer) Submit() *Printer {
-	repositories.GetPrinterRepository().Save(self.Printer)
+	repositories.GetPrinterRepository().Update(self.Printer)
 	return self
 }
 

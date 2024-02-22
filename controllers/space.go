@@ -48,7 +48,7 @@ func (self *SpaceController) CreatePrinter(ctx *gin.Context) {
 	}
 	var createPrinterRequest api.SavePrinter
 	ctx.ShouldBindJSON(&createPrinterRequest)
-	printer := space.CreatePrinter(createPrinterRequest.Name, createPrinterRequest.Sn, string(createPrinterRequest.Type))
+	printer := space.CreatePrinter(createPrinterRequest.Name, createPrinterRequest.Sn, string(createPrinterRequest.Type), string(createPrinterRequest.Model))
 	ctx.JSON(http.StatusCreated, ConvertPrinter(printer))
 }
 
@@ -100,6 +100,7 @@ func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
 	printer.Name = updatePrinterRequest.Name
 	printer.Sn = updatePrinterRequest.Sn
 	printer.Type = string(updatePrinterRequest.Type)
+	printer.Model = string(updatePrinterRequest.Model)
 	printer.Submit()
 	ctx.JSON(http.StatusOK, ConvertPrinter(printer))
 }

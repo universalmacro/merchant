@@ -112,14 +112,15 @@ func (self *Space) CreateFood(food *Food) (*Food, error) {
 	return food, nil
 }
 
-func (s *Space) CreatePrinter(name, sn, printerType string) *Printer {
+func (s *Space) CreatePrinter(name, sn, printerType, model string) *Printer {
 	printer := &entities.Printer{
 		SpaceAsset: entities.SpaceAsset{
 			SpaceID: s.ID(),
 		},
-		Name: name,
-		Sn:   sn,
-		Type: printerType,
+		Name:  name,
+		Sn:    sn,
+		Type:  printerType,
+		Model: model,
 	}
 	repositories.GetPrinterRepository().Save(printer)
 	return &Printer{printer}

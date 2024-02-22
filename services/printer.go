@@ -19,10 +19,6 @@ func (self *Printer) StringID() string {
 	return utils.UintToString(self.ID())
 }
 
-func (self *Printer) Model() string {
-	return self.Printer.Model
-}
-
 func (self *Printer) Delete() {
 	repositories.GetPrinterRepository().Delete(self.Printer)
 }

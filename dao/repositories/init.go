@@ -11,5 +11,6 @@ func init() {
 		&entities.VerificationCode{},
 		&entities.Space{},
 		&entities.Table{},
-		&entities.Food{})
+		&entities.Food{},
+		&entities.Printer{})
 }

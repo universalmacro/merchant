@@ -67,10 +67,10 @@ func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
 		ctx.JSON(403, gin.H{"error": "forbidden"})
 		return
 	}
-	var updateFoodPrintersRequest []string
+	var updateFoodPrintersRequest api.UpdateFoodPrintersRequest
 	ctx.ShouldBindJSON(&updateFoodPrintersRequest)
 	var printerIds []uint
-	for _, printerId := range updateFoodPrintersRequest {
+	for _, printerId := range updateFoodPrintersRequest.PrinterIds {
 		printerIds = append(printerIds, utils.StringToUint(printerId))
 	}
 	food.SetPrinters(printerIds...).Submit()

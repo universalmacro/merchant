@@ -111,16 +111,7 @@ func (f *Food) Attributes() entities.Attributes {
 }
 
 func (f *Food) SetPrinters(printers ...uint) *Food {
-	var printerIds []uint
-	// printerService := GetPrinterService()
-	for _, printerId := range printers {
-		printerIds = append(printerIds, printerId)
-		// printer := printerService.GetPrinter(printerId)
-		// if printer == nil && printer.SpaceID() == f.SpaceID {
-		// 	printerIds = append(printerIds, printerId)
-		// }
-	}
-	f.Food.Printers = printerIds
+	f.Food.Printers = printers
 	return f
 }
 
@@ -178,6 +169,51 @@ func (f *Food) Space() *Space {
 
 func (f *Food) Granted(account Account) bool {
 	return f.Space().Granted(account)
+}
+
+func (self *Food) Equals(food *Food) bool {
+	if food == nil {
+		return false
+	}
+	if self.ID() != food.ID() {
+		return false
+	}
+	targetAttributesMap := food.AttributesMap()
+	selfAttributesMap := food.AttributesMap()
+	if len(targetAttributesMap) != len(selfAttributesMap) {
+		return false
+	}
+	for selfAttributeKey, selfAttributeValue := range selfAttributesMap {
+		targetAttributeValue, ok := targetAttributesMap[selfAttributeKey]
+		if !ok {
+			return false
+		}
+		if len(selfAttributeValue) != len(targetAttributeValue) {
+			return false
+		}
+		for label, option := range selfAttributeValue {
+			targetOption, ok := targetAttributeValue[label]
+			if !ok {
+				return false
+			}
+			if option.Label != targetOption.Label || option.Extra != targetOption.Extra {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (f *Food) AttributesMap() map[string]map[string]entities.Option {
+	attributesMap := make(map[string]map[string]entities.Option)
+	for _, attr := range f.Food.Attributes {
+		optionsMap := make(map[string]entities.Option)
+		for _, option := range attr.Options {
+			optionsMap[option.Label] = option
+		}
+		attributesMap[attr.Label] = optionsMap
+	}
+	return attributesMap
 }
 
 func (f *Food) UpdateImage(file *multipart.FileHeader) *Food {

@@ -70,8 +70,8 @@ func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
 	var updateFoodPrintersRequest api.UpdateFoodPrintersRequest
 	ctx.ShouldBindJSON(&updateFoodPrintersRequest)
 	var printerIds []uint
-	for _, printerId := range updateFoodPrintersRequest.PrinterIds {
-		printerIds = append(printerIds, utils.StringToUint(printerId))
+	for i := range updateFoodPrintersRequest.PrinterIds {
+		printerIds = append(printerIds, utils.StringToUint(updateFoodPrintersRequest.PrinterIds[i]))
 	}
 	food.SetPrinters(printerIds...).Submit()
 	printers := food.Printers()
@@ -135,7 +135,15 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 
 // CreateOrder implements merchantapiinterfaces.OrderApi.
 func (*OrderController) CreateOrder(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	if space == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	var createOrderRequest api.CreateOrderRequest
+	ctx.ShouldBindJSON(&createOrderRequest)
+
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.

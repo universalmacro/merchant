@@ -152,3 +152,7 @@ func (self *Space) SetFoodCategories(categories ...string) *Space {
 	self.Space.FoodCategories = foodCategories
 	return self
 }
+
+func (self *Space) CreateOrder() {
+	panic("unimplemented")
+}

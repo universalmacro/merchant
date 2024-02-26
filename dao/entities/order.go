@@ -3,10 +3,8 @@ package entities
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
 
 	"github.com/universalmacro/common/dao"
-	"github.com/universalmacro/common/data"
 	"github.com/universalmacro/common/snowflake"
 	"gorm.io/gorm"
 )
@@ -92,17 +90,17 @@ func (s Attribute) Value() (driver.Value, error) {
 
 type Attributes []Attribute
 
-func (as Attributes) GetOption(left, right string) (data.Pair[string, string], error) {
+func (as Attributes) GetOption(left, right string) *Option {
 	for _, a := range as {
 		if left == a.Label {
 			for _, option := range a.Options {
 				if right == option.Label {
-					return data.Pair[string, string]{L: left, R: right}, nil
+					return &option
 				}
 			}
 		}
 	}
-	return data.Pair[string, string]{}, errors.New("not found")
+	return nil
 }
 
 func (Attributes) GormDataType() string {
@@ -114,6 +112,52 @@ func (s *Attributes) Scan(value any) error {
 }
 
 func (s Attributes) Value() (driver.Value, error) {
-	b, err := json.Marshal(s)
-	return b, err
+	return json.Marshal(s)
+}
+
+type FoodSpec struct {
+	Food
+	Spec []Spec `json:"spec"`
+}
+
+func (self *FoodSpec) Scan(value any) error {
+	return json.Unmarshal(value.([]byte), self)
+}
+
+func (self FoodSpec) Value() (driver.Value, error) {
+	return json.Marshal(self)
+}
+
+func (self *FoodSpec) SetFood(food Food) *FoodSpec {
+	self.Food = food
+	return self
+}
+
+func (self *FoodSpec) SetSpec(spec []Spec) *FoodSpec {
+	self.Spec = spec
+	return self
+}
+
+func (self *FoodSpec) Price() int64 {
+	var total int64
+	for _, spec := range self.Spec {
+		option := self.Attributes.GetOption(spec.Attribute, spec.Optioned)
+		if option != nil {
+			total += option.Extra
+		}
+	}
+	self.Food.Price += total
+	return total
+}
+
+type Spec struct {
+	Attribute string `json:"attribute"`
+	Optioned  string `json:"optioned"`
+}
+
+type Order struct {
+	SpaceAsset
+	Code       string
+	TableLabel *string
+	FoodSpecs  []FoodSpec
 }

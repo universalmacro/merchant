@@ -118,6 +118,13 @@ func (f *Food) Attributes() entities.Attributes {
 }
 
 func (f *Food) SetPrinters(printers ...uint) *Food {
+	var printerIds []uint
+	for _, printerId := range printers {
+		printer := GetPrinterService().GetPrinter(printerId)
+		if printer != nil && printer.SpaceID() == f.SpaceID {
+			printerIds = append(printerIds, printer.ID())
+		}
+	}
 	f.Food.Printers = printers
 	return f
 }
@@ -249,6 +256,16 @@ func (self *Food) UpdateImage(file *multipart.FileHeader) *Food {
 	self.SetImage(url)
 	self.Submit()
 	return self
+}
+
+func (self *Food) CreateFoodSpec(spec ...string) {
+	// foodSpec := &entities.FoodSpec{
+	// 	Food: *self.Food,
+	// }
+}
+
+type FoodSpec struct {
+	*entities.FoodSpec
 }
 
 var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)

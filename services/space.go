@@ -153,6 +153,6 @@ func (self *Space) SetFoodCategories(categories ...string) *Space {
 	return self
 }
 
-func (self *Space) CreateOrder() {
+func (self *Space) CreateOrder(account Account, tableLabel *string) {
 	panic("unimplemented")
 }

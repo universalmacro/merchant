@@ -84,7 +84,7 @@ func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
 
 // ListFoodCategories implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) ListFoodCategories(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
+	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -99,7 +99,7 @@ func (*OrderController) UpdateFoodCategories(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -118,7 +118,7 @@ func (*OrderController) CancelOrder(ctx *gin.Context) {
 // CreateFood implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) CreateFood(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -136,7 +136,7 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 // CreateOrder implements merchantapiinterfaces.OrderApi.
 func (*OrderController) CreateOrder(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -200,7 +200,7 @@ func (self *OrderController) GetFoodById(ctx *gin.Context) {
 
 // ListFoods implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) ListFoods(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
+	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -220,7 +220,7 @@ func (self *OrderController) ListTables(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
-	id := server.UintID(ctx, "id")
+	id := server.UintID(ctx, "spaceId")
 	space := self.spaceService.GetSpace(id)
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
@@ -288,7 +288,7 @@ func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
 // CreateTable implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}

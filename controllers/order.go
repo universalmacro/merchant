@@ -283,6 +283,13 @@ func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
 		ctx.JSON(403, gin.H{"error": "forbidden"})
 		return
 	}
+	file, _ := ctx.FormFile("file")
+	if file == nil {
+		ctx.JSON(400, gin.H{"error": "no file"})
+		return
+	}
+	food.UpdateImage(file)
+	ctx.JSON(200, ConvertFood(food))
 }
 
 // CreateTable implements merchantapiinterfaces.OrderApi.

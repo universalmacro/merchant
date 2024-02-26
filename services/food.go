@@ -99,9 +99,9 @@ func (f *Food) FixedOffset() *int64 {
 	return f.Food.FixedOffset
 }
 
-func (f *Food) SetImage(image string) *Food {
-	f.Food.Image = image
-	return f
+func (self *Food) SetImage(image string) *Food {
+	self.Food.Image = image
+	return self
 }
 
 func (f *Food) Image() string {
@@ -247,6 +247,7 @@ func (self *Food) UpdateImage(file *multipart.FileHeader) *Food {
 		})
 	url := fmt.Sprintf("https://%s.cos.%s.myqcloud.com/%s", bucket, region, path)
 	self.SetImage(url)
+	self.Submit()
 	return self
 }
 

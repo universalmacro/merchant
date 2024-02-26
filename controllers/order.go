@@ -266,7 +266,7 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 }
 
 // UpdateFoodImage implements merchantapiinterfaces.OrderApi.
-func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
+func (self *OrderController) UpdateFoodImage(ctx *gin.Context) {
 	// TODO: implement
 	account := getAccount(ctx)
 	if account == nil {
@@ -274,7 +274,7 @@ func (*OrderController) UpdateFoodImage(ctx *gin.Context) {
 		return
 	}
 	id := server.UintID(ctx, "id")
-	food := services.GetFoodService().GetById(id)
+	food := self.foodService.GetById(id)
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return

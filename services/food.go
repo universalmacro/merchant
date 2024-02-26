@@ -125,7 +125,7 @@ func (f *Food) SetPrinters(printers ...uint) *Food {
 			printerIds = append(printerIds, printer.ID())
 		}
 	}
-	f.Food.Printers = printers
+	f.Food.Printers = printerIds
 	return f
 }
 

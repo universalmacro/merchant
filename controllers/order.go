@@ -215,19 +215,9 @@ func (self *OrderController) ListFoods(ctx *gin.Context) {
 
 // ListTables implements merchantapiinterfaces.OrderApi.
 func (self *OrderController) ListTables(ctx *gin.Context) {
-	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
-		return
-	}
-	id := server.UintID(ctx, "spaceId")
-	space := self.spaceService.GetSpace(id)
+	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
-		return
-	}
-	if !space.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
 		return
 	}
 	tables := space.ListTables()

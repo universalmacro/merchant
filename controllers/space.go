@@ -126,21 +126,6 @@ func (self *SpaceController) CreateTable(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, ConvertTable(table))
 }
 
-// ListTables implements merchantapiinterfaces.SpaceApi.
-func (self *SpaceController) ListTables(ctx *gin.Context) {
-	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
-	if space == nil {
-		return
-	}
-	tables := space.ListTables()
-	apiTables := make([]api.Table, len(tables))
-	for i := range tables {
-		apiTables[i] = ConvertTable(&tables[i])
-	}
-	ctx.JSON(http.StatusOK, apiTables)
-}
-
 // CreateSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) CreateSpace(ctx *gin.Context) {
 	account := getAccount(ctx)

@@ -42,7 +42,7 @@ func (*SpaceController) GetPrinter(ctx *gin.Context) {
 // CreatePrinter implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) CreatePrinter(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -71,7 +71,7 @@ func (self *SpaceController) DeletePrinter(ctx *gin.Context) {
 // ListPrinters implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) ListPrinters(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -108,7 +108,7 @@ func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
 // CreateTable implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -129,7 +129,7 @@ func (self *SpaceController) CreateTable(ctx *gin.Context) {
 // ListTables implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) ListTables(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -162,7 +162,7 @@ func (self *SpaceController) CreateSpace(ctx *gin.Context) {
 // DeleteSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) DeleteSpace(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}
@@ -171,7 +171,7 @@ func (self *SpaceController) DeleteSpace(ctx *gin.Context) {
 
 // GetSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) GetSpace(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "id"))
+	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
@@ -207,7 +207,7 @@ func (self *SpaceController) ListSpaces(ctx *gin.Context) {
 // UpdateSpace implements merchantapiinterfaces.SpaceApi.
 func (self *SpaceController) UpdateSpace(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "id"), account)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
 	}

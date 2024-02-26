@@ -1,11 +1,18 @@
 package services
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"mime/multipart"
+	"net/http"
+	"net/url"
 
+	"github.com/tencentyun/cos-go-sdk-v5"
+	"github.com/universalmacro/common/config"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
+	"github.com/universalmacro/common/snowflake"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
@@ -216,32 +223,31 @@ func (f *Food) AttributesMap() map[string]map[string]entities.Option {
 	return attributesMap
 }
 
-func (f *Food) UpdateImage(file *multipart.FileHeader) *Food {
-	// configClient := node.NewNodeConfigClient(
-	// 	config.GetString("core.apiUrl"),
-	// 	config.GetString("node.id"),
-	// 	config.GetString("node.secretKey"))
-	// config := configClient.GetConfig()
-	// imageId := snowflake.NewIdGenertor(0).Uint()
-	// path := "foods/" + utils.UintToString(imageId)
-	// u, _ := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", Bucket, CosClient.Region))
-	// b := &cos.BaseURL{BucketURL: u}
-	// client := cos.NewClient(b, &http.Client{
-	// 	Transport: &cos.AuthorizationTransport{
-	// 		SecretID:  config,
-	// 		SecretKey: CosClient.SecretKey,
-	// 	},
-	// })
-	// f, _ := file.Open()
-	// client.Object.Put(context.Background(), path, f,
-	// 	&cos.ObjectPutOptions{
-	// 		ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
-	// 			ContentType: file.Header.Get("content-type"),
-	// 		},
-	// 	})
-	// url := fmt.Sprintf("https://%s.cos.%s.myqcloud.com/%s", Bucket, CosClient.Region, path)
-	// i.SetImage(url)
-	return f
+func (self *Food) UpdateImage(file *multipart.FileHeader) *Food {
+	imageId := snowflake.NewIdGenertor(0).Uint()
+	secretId := config.GetString("cos.secretId")
+	bucket := config.GetString("cos.bucket")
+	region := config.GetString("cos.region")
+	secretKey := config.GetString("cos.secretKey")
+	path := "foods/" + utils.UintToString(imageId)
+	u, _ := url.Parse(fmt.Sprintf("https://%s.cos.%s.myqcloud.com", bucket, region))
+	b := &cos.BaseURL{BucketURL: u}
+	client := cos.NewClient(b, &http.Client{
+		Transport: &cos.AuthorizationTransport{
+			SecretID:  secretId,
+			SecretKey: secretKey,
+		},
+	})
+	f, _ := file.Open()
+	client.Object.Put(context.Background(), path, f,
+		&cos.ObjectPutOptions{
+			ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
+				ContentType: file.Header.Get("content-type"),
+			},
+		})
+	url := fmt.Sprintf("https://%s.cos.%s.myqcloud.com/%s", bucket, region, path)
+	self.SetImage(url)
+	return self
 }
 
 var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)

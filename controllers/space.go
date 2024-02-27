@@ -86,6 +86,10 @@ func (self *SpaceController) ListPrinters(ctx *gin.Context) {
 // UpdatePrinter implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
 	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 	printer := services.GetPrinterService().GetPrinter(server.UintID(ctx, "printerId"))
 	if printer == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})

@@ -146,7 +146,9 @@ func (self *OrderController) CreateOrder(ctx *gin.Context) {
 	}
 	var createOrderRequest api.CreateOrderRequest
 	ctx.ShouldBindJSON(&createOrderRequest)
-	order := space.CreateOrder(account, createOrderRequest.TableLabel, factories.NewFoodSpecs(createOrderRequest.Foods))
+	order := space.CreateOrder(account,
+		createOrderRequest.TableLabel,
+		factories.NewFoodSpecs(createOrderRequest.Foods))
 	fmt.Println(order)
 	// ctx.JSON(201, ConvertOrder(order))
 }

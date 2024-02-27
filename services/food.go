@@ -258,14 +258,60 @@ func (self *Food) UpdateImage(file *multipart.FileHeader) *Food {
 	return self
 }
 
-func (self *Food) CreateFoodSpec(spec ...string) {
-	// foodSpec := &entities.FoodSpec{
-	// 	Food: *self.Food,
-	// }
+func (self *Food) CreateFoodSpec(spec map[string]string) FoodSpec {
+	var specs entities.Spec
+	for attribute, optioned := range spec {
+		option := self.Attributes().GetOption(attribute, optioned)
+		if option != nil {
+			specs = append(specs, entities.SpecItem{
+				Attribute: attribute,
+				Optioned:  optioned,
+			})
+		}
+	}
+	foodSpec := FoodSpec{
+		Food: self,
+		Spec: Spec{specs},
+	}
+	return foodSpec
 }
 
 type FoodSpec struct {
-	*entities.FoodSpec
+	*Food `json:"food"`
+	Spec  `json:"spec"`
+}
+
+func (self *FoodSpec) Price() int64 {
+	var total int64
+	for _, spec := range self.Spec.Spec {
+		option := self.Attributes().GetOption(spec.Attribute, spec.Optioned)
+		if option != nil {
+			total += option.Extra
+		}
+	}
+	total += self.Price()
+	return total
+}
+
+func (self *FoodSpec) Equals(obj *FoodSpec) bool {
+	if obj == nil {
+		return false
+	}
+	if !self.Food.Equals(obj.Food) {
+		return false
+	}
+	if !self.Spec.Equals(obj.Spec) {
+		return false
+	}
+	return true
+}
+
+type Spec struct {
+	entities.Spec
+}
+
+func (self Spec) Equals(from Spec) bool {
+	return self.Spec.Equals(from.Spec)
 }
 
 var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)
@@ -289,5 +335,5 @@ func (self *FoodService) GetById(id uint) *Food {
 	if f == nil {
 		return nil
 	}
-	return &Food{Food: f}
+	return &Food{f}
 }

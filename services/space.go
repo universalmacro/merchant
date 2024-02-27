@@ -153,6 +153,23 @@ func (self *Space) SetFoodCategories(categories ...string) *Space {
 	return self
 }
 
-func (self *Space) CreateOrder(account Account, tableLabel *string) {
-	panic("unimplemented")
+func (self *Space) CreateOrder(account Account, tableLabel *string, foods []FoodSpec) Order {
+	var foodSpace entities.FoodSpces
+	for _, food := range foods {
+		foodSpace = append(foodSpace, entities.FoodSpec{
+			Food: *food.Food.Food,
+			Spec: food.Spec.Spec,
+		})
+	}
+	order := &entities.Order{
+		SpaceAsset: entities.SpaceAsset{
+			SpaceID: self.ID(),
+		},
+		TableLabel: tableLabel,
+		Status:     "SUBMITTED",
+		Foods:      foodSpace,
+	}
+	orderRepo := repositories.GetOrderRepository()
+	orderRepo.Save(order)
+	return Order{order}
 }

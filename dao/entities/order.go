@@ -116,8 +116,15 @@ func (s Attributes) Value() (driver.Value, error) {
 }
 
 type FoodSpec struct {
-	Food
-	Spec []Spec `json:"spec"`
+	Food `json:"food"`
+	Spec Spec `json:"spec"`
+}
+
+func (self *FoodSpec) Equals(from *FoodSpec) bool {
+	if from == nil {
+		return false
+	}
+	return true
 }
 
 func (self *FoodSpec) Scan(value any) error {
@@ -133,7 +140,7 @@ func (self *FoodSpec) SetFood(food Food) *FoodSpec {
 	return self
 }
 
-func (self *FoodSpec) SetSpec(spec []Spec) *FoodSpec {
+func (self *FoodSpec) SetSpec(spec Spec) *FoodSpec {
 	self.Spec = spec
 	return self
 }
@@ -150,14 +157,50 @@ func (self *FoodSpec) Price() int64 {
 	return total
 }
 
-type Spec struct {
+type Spec []SpecItem
+
+type SpecItem struct {
 	Attribute string `json:"attribute"`
 	Optioned  string `json:"optioned"`
 }
 
+func (self Spec) Equals(from Spec) bool {
+	selfMap := make(map[string]string)
+	fromMap := make(map[string]string)
+	for _, spec := range self {
+		selfMap[spec.Attribute] = spec.Optioned
+	}
+	for _, spec := range from {
+		fromMap[spec.Attribute] = spec.Optioned
+	}
+	for k, v := range selfMap {
+		if fromMap[k] != v {
+			return false
+		}
+	}
+	return true
+}
+
 type Order struct {
 	SpaceAsset
-	Code       string
+	PickUpCode int64
 	TableLabel *string
-	FoodSpecs  []FoodSpec
+	Foods      FoodSpces
+	Status     string `gorm:"index;type:varchar(64)"`
+	CreatorID  *int64
+}
+
+func (a *Order) BeforeCreate(tx *gorm.DB) (err error) {
+	a.Model.ID = snowflake.NewIdGenertor(0).Uint()
+	return err
+}
+
+type FoodSpces []FoodSpec
+
+func (self *FoodSpces) Scan(value any) error {
+	return json.Unmarshal(value.([]byte), self)
+}
+
+func (self FoodSpces) Value() (driver.Value, error) {
+	return json.Marshal(self)
 }

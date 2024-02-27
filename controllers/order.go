@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/server"
 	"github.com/universalmacro/common/utils"
 	api "github.com/universalmacro/merchant-api-interfaces"
+	"github.com/universalmacro/merchant/controllers/factories"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/services"
 )
@@ -134,16 +137,18 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 }
 
 // CreateOrder implements merchantapiinterfaces.OrderApi.
-func (*OrderController) CreateOrder(ctx *gin.Context) {
+func (self *OrderController) CreateOrder(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
+	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
 	}
 	var createOrderRequest api.CreateOrderRequest
 	ctx.ShouldBindJSON(&createOrderRequest)
-
+	order := space.CreateOrder(account, createOrderRequest.TableLabel, factories.NewFoodSpecs(createOrderRequest.Foods))
+	fmt.Println(order)
+	// ctx.JSON(201, ConvertOrder(order))
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.

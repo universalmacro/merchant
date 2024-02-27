@@ -71,3 +71,7 @@ func ConvertPrinter(p *services.Printer) api.Printer {
 		Model: api.PrinterModel(p.Printer.Model),
 	}
 }
+
+func ConvertOrder(order *services.Order) api.Order {
+	return api.Order{}
+}

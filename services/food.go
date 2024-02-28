@@ -314,6 +314,10 @@ func (self Spec) Equals(from Spec) bool {
 	return self.Spec.Equals(from.Spec)
 }
 
+func (self Spec) Len() int {
+  return len(self.Spec)
+}
+
 var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)
 
 func GetFoodService() *FoodService {

@@ -149,8 +149,7 @@ func (self *OrderController) CreateOrder(ctx *gin.Context) {
 	order := space.CreateOrder(account,
 		createOrderRequest.TableLabel,
 		factories.NewFoodSpecs(createOrderRequest.Foods))
-	fmt.Println(order)
-	// ctx.JSON(201, ConvertOrder(order))
+  ctx.JSON(201, ConvertOrder(&order))
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.
@@ -326,6 +325,10 @@ func (self *OrderController) UpdateTable(ctx *gin.Context) {
 	var updateTableRequest api.SaveTableRequest
 	ctx.ShouldBindJSON(&updateTableRequest)
 	table.SetLabel(updateTableRequest.Label).Submit()
+}
+
+func (self *OrderController) ListOrders(ctx *gin.Context) {
+
 }
 
 func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {

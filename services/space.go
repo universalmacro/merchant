@@ -173,3 +173,13 @@ func (self *Space) CreateOrder(account Account, tableLabel *string, foods []Food
 	orderRepo.Save(order)
 	return Order{order}
 }
+
+func (space *Space) ListOrders() []Order {
+	orderRepo := repositories.GetOrderRepository()
+	orders, _ := orderRepo.FindMany("space_id = ?", space.ID())
+	result := make([]Order, len(orders))
+	for i := range orders {
+		result[i] = Order{&orders[i]}
+	}
+	return result
+}

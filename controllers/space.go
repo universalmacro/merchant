@@ -25,7 +25,7 @@ type SpaceController struct {
 }
 
 // ListSpaceChildren implements merchantapiinterfaces.SpaceApi.
-func (self *SpaceController) ListSpaceChildren(ctx *gin.Context) {
+func (c *SpaceController) ListSpaceChildren(ctx *gin.Context) {
 	panic("unimplemented")
 }
 
@@ -58,9 +58,9 @@ func (self *SpaceController) CreatePrinter(ctx *gin.Context) {
 }
 
 // DeletePrinter implements merchantapiinterfaces.SpaceApi.
-func (self *SpaceController) DeletePrinter(ctx *gin.Context) {
+func (sc *SpaceController) DeletePrinter(ctx *gin.Context) {
 	account := getAccount(ctx)
-	printer := self.printerService.GetPrinter(server.UintID(ctx, "printerId"))
+	printer := sc.printerService.GetPrinter(server.UintID(ctx, "printerId"))
 	if printer == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
@@ -164,8 +164,8 @@ func (self *SpaceController) DeleteSpace(ctx *gin.Context) {
 }
 
 // GetSpace implements merchantapiinterfaces.SpaceApi.
-func (self *SpaceController) GetSpace(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
+func (sc *SpaceController) GetSpace(ctx *gin.Context) {
+	space := sc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return

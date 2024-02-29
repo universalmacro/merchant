@@ -135,9 +135,9 @@ func (self *OrderController) CreateFood(ctx *gin.Context) {
 }
 
 // CreateOrder implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) CreateOrder(ctx *gin.Context) {
+func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 	account := getAccount(ctx)
-	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
+	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -325,8 +325,19 @@ func (self *OrderController) UpdateTable(ctx *gin.Context) {
 	table.SetLabel(updateTableRequest.Label).Submit()
 }
 
-func (self *OrderController) ListOrders(ctx *gin.Context) {
-
+func (oc *OrderController) ListOrders(ctx *gin.Context) {
+	account := getAccount(ctx)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
+	if space == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	orders := space.ListOrders()
+	result := make([]api.Order, len(orders))
+	for i := range orders {
+		result[i] = ConvertOrder(&orders[i])
+	}
+	ctx.JSON(200, result)
 }
 
 func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {

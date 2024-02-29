@@ -24,6 +24,11 @@ type SpaceController struct {
 	printerService  *services.PrinterService
 }
 
+// ListSpaceChildren implements merchantapiinterfaces.SpaceApi.
+func (self *SpaceController) ListSpaceChildren(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
 // GetPrinter implements merchantapiinterfaces.SpaceApi.
 func (*SpaceController) GetPrinter(ctx *gin.Context) {
 	account := getAccount(ctx)

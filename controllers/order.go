@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/server"
 	"github.com/universalmacro/common/utils"
@@ -149,7 +147,7 @@ func (self *OrderController) CreateOrder(ctx *gin.Context) {
 	order := space.CreateOrder(account,
 		createOrderRequest.TableLabel,
 		factories.NewFoodSpecs(createOrderRequest.Foods))
-  ctx.JSON(201, ConvertOrder(&order))
+	ctx.JSON(201, ConvertOrder(&order))
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.

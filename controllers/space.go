@@ -206,6 +206,10 @@ func (self *SpaceController) UpdateSpace(ctx *gin.Context) {
 		ConvertSpace(space.SetName(updateSpaceRequest.Name).Submit()))
 }
 
+func (self *SpaceController) GetSpaceParent(ctx *gin.Context) {
+
+}
+
 func grantedSpace(ctx *gin.Context, spaceId uint, account services.Account) *services.Space {
 	space := services.GetSpaceService().GetSpace(spaceId)
 	if account == nil {

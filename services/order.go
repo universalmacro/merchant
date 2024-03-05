@@ -5,6 +5,7 @@ import (
 
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
+	"github.com/universalmacro/merchant/dao/repositories"
 )
 
 type Order struct {
@@ -26,4 +27,25 @@ func (o *Order) FoodSpec() []FoodSpec {
 		foods = append(foods, NewFoodSpec(o.Order.Foods[i]))
 	}
 	return foods
+}
+
+func (o *Order) PrintKitchen() {
+
+}
+
+func (o *Order) PrintCashier() {
+
+}
+
+func (o *Order) CancelItems() {
+
+}
+
+func (o *Order) AddItems(foods []FoodSpec) {
+
+}
+
+func (o *Order) Submit() *Order {
+	repositories.GetOrderRepository().Save(o.Order)
+	return o
 }

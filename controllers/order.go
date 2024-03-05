@@ -151,6 +151,8 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 	order := space.CreateOrder(account,
 		createOrderRequest.TableLabel,
 		factories.NewFoodSpecs(createOrderRequest.Foods))
+	order.PrintKitchen()
+	order.PrintCashier()
 	ctx.JSON(201, ConvertOrder(&order))
 }
 

@@ -25,8 +25,8 @@ func NewFoodSpec(foodSpec api.FoodSpec) *services.FoodSpec {
 
 func NewFoodSpecs(foodSpecs []api.FoodSpec) []services.FoodSpec {
 	var result []services.FoodSpec
-	for _, foodSpec := range foodSpecs {
-		if food := NewFoodSpec(foodSpec); food != nil {
+	for i := range foodSpecs {
+		if food := NewFoodSpec(foodSpecs[i]); food != nil {
 			result = append(result, *food)
 		}
 	}

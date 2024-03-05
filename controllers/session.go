@@ -19,10 +19,10 @@ type SessionController struct {
 }
 
 // CreateSession implements merchantapiinterfaces.SessionApi.
-func (self *SessionController) CreateSession(ctx *gin.Context) {
+func (sc *SessionController) CreateSession(ctx *gin.Context) {
 	var request api.CreateSessionRequest
 	ctx.ShouldBindJSON(&request)
-	token, err := self.sessionService.CreateSession(*request.Account, *request.Password, request.ShortMerchantId)
+	token, err := sc.sessionService.CreateSession(*request.Account, *request.Password, request.ShortMerchantId)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"code":    "Unauthorized",

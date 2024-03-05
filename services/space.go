@@ -46,6 +46,15 @@ func (s *Space) StringID() string {
 	return utils.UintToString(s.ID())
 }
 
+func (s *Space) Children() []Space {
+	children, _ := repositories.GetSpaceRepository().FindMany("parent_id = ?", s.ID())
+	result := make([]Space, len(children))
+	for i := range children {
+		result[i] = Space{&children[i]}
+	}
+	return result
+}
+
 func (s *Space) Granted(account Account) bool {
 	return account.MerchantId() == s.MerchantId
 }

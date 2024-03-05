@@ -26,7 +26,22 @@ type SpaceController struct {
 
 // ListSpaceChildren implements merchantapiinterfaces.SpaceApi.
 func (c *SpaceController) ListSpaceChildren(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
+	if space == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	if !space.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	children := space.Children()
+	apiSpaces := make([]api.Space, len(children))
+	for i := range children {
+		apiSpaces[i] = ConvertSpace(&children[i])
+	}
+	ctx.JSON(http.StatusOK, dao.List[api.Space]{Items: apiSpaces})
 }
 
 // GetPrinter implements merchantapiinterfaces.SpaceApi.
@@ -118,9 +133,6 @@ func (*SpaceController) UpdatePrinter(ctx *gin.Context) {
 func (sc *SpaceController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
 	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
-	if space == nil {
-		return
-	}
 	if space == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return

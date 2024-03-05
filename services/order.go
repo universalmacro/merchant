@@ -20,9 +20,10 @@ func (o *Order) Code() string {
 	return fmt.Sprintf("%d", code)
 }
 
-func (o *Order) FoodSpec() {
-	var foods []Food
+func (o *Order) FoodSpec() []FoodSpec {
+	var foods []FoodSpec
 	for i := range o.Order.Foods {
-		foods = append(foods, Food{&o.Order.Foods[i].Food})
+		foods = append(foods, NewFoodSpec(o.Order.Foods[i]))
 	}
+	return foods
 }

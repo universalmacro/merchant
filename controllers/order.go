@@ -125,7 +125,7 @@ func (oc *OrderController) CreateFood(ctx *gin.Context) {
 	}
 	var createFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&createFoodRequest)
-	food, err := updateFood(createFoodRequest, services.NewFood())
+	food, err := updateFood(createFoodRequest, services.NewEmptyFood())
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

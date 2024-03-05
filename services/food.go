@@ -18,9 +18,15 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
-func NewFood() *Food {
+func NewEmptyFood() *Food {
 	return &Food{
 		Food: &entities.Food{},
+	}
+}
+
+func NewFood(enitiy entities.Food) *Food {
+	return &Food{
+		Food: &enitiy,
 	}
 }
 
@@ -274,6 +280,13 @@ func (f *Food) CreateFoodSpec(spec map[string]string) FoodSpec {
 		Spec: Spec{specs},
 	}
 	return foodSpec
+}
+
+func NewFoodSpec(entity entities.FoodSpec) FoodSpec {
+	return FoodSpec{
+		Food: &Food{&entity.Food},
+		Spec: Spec{entity.Spec},
+	}
 }
 
 type FoodSpec struct {

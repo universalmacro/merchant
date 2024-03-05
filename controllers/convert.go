@@ -92,10 +92,11 @@ func ConvertOrder(o *services.Order) api.Order {
 	if o == nil {
 		return api.Order{}
 	}
-	// var foods []api.Food
-	// for i := range o.Foods {
-	// 	foods = append(foods, ConvertFood(&o.Foods[i].Food))
-	// }
+	var foods []api.FoodSpec
+	foodSpecs := o.FoodSpec()
+	for i := range foodSpecs {
+		foods = append(foods, ConvertFoodSpec(&foodSpecs[i]))
+	}
 	return api.Order{
 		Id:         o.StringID(),
 		UpdatedAt:  o.UpdatedAt.Unix(),
@@ -103,5 +104,6 @@ func ConvertOrder(o *services.Order) api.Order {
 		Status:     api.OrderStatus(o.Status),
 		TableLabel: o.TableLabel,
 		Code:       o.Code(),
+		Foods:      foods,
 	}
 }

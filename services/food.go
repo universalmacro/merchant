@@ -99,9 +99,9 @@ func (f *Food) FixedOffset() *int64 {
 	return f.Food.FixedOffset
 }
 
-func (self *Food) SetImage(image string) *Food {
-	self.Food.Image = image
-	return self
+func (s *Food) SetImage(image string) *Food {
+	s.Food.Image = image
+	return s
 }
 
 func (f *Food) Image() string {
@@ -185,11 +185,11 @@ func (f *Food) Granted(account Account) bool {
 	return f.Space().Granted(account)
 }
 
-func (self *Food) Equals(food *Food) bool {
+func (f *Food) Equals(food *Food) bool {
 	if food == nil {
 		return false
 	}
-	if self.ID() != food.ID() {
+	if f.ID() != food.ID() {
 		return false
 	}
 	targetAttributesMap := food.AttributesMap()
@@ -230,7 +230,7 @@ func (f *Food) AttributesMap() map[string]map[string]entities.Option {
 	return attributesMap
 }
 
-func (self *Food) UpdateImage(file *multipart.FileHeader) *Food {
+func (food *Food) UpdateImage(file *multipart.FileHeader) *Food {
 	imageId := snowflake.NewIdGenertor(0).Uint()
 	secretId := config.GetString("cos.secretId")
 	bucket := config.GetString("cos.bucket")
@@ -253,15 +253,15 @@ func (self *Food) UpdateImage(file *multipart.FileHeader) *Food {
 			},
 		})
 	url := fmt.Sprintf("https://%s.cos.%s.myqcloud.com/%s", bucket, region, path)
-	self.SetImage(url)
-	self.Submit()
-	return self
+	food.SetImage(url)
+	food.Submit()
+	return food
 }
 
-func (self *Food) CreateFoodSpec(spec map[string]string) FoodSpec {
+func (f *Food) CreateFoodSpec(spec map[string]string) FoodSpec {
 	var specs entities.Spec
 	for attribute, optioned := range spec {
-		option := self.Attributes().GetOption(attribute, optioned)
+		option := f.Attributes().GetOption(attribute, optioned)
 		if option != nil {
 			specs = append(specs, entities.SpecItem{
 				Attribute: attribute,
@@ -270,7 +270,7 @@ func (self *Food) CreateFoodSpec(spec map[string]string) FoodSpec {
 		}
 	}
 	foodSpec := FoodSpec{
-		Food: self,
+		Food: f,
 		Spec: Spec{specs},
 	}
 	return foodSpec
@@ -281,26 +281,26 @@ type FoodSpec struct {
 	Spec  `json:"spec"`
 }
 
-func (self *FoodSpec) Price() int64 {
+func (f *FoodSpec) Price() int64 {
 	var total int64
-	for _, spec := range self.Spec.Spec {
-		option := self.Attributes().GetOption(spec.Attribute, spec.Optioned)
+	for _, spec := range f.Spec.Spec {
+		option := f.Attributes().GetOption(spec.Attribute, spec.Optioned)
 		if option != nil {
 			total += option.Extra
 		}
 	}
-	total += self.Price()
+	total += f.Food.Price()
 	return total
 }
 
-func (self *FoodSpec) Equals(obj *FoodSpec) bool {
+func (f *FoodSpec) Equals(obj *FoodSpec) bool {
 	if obj == nil {
 		return false
 	}
-	if !self.Food.Equals(obj.Food) {
+	if !f.Food.Equals(obj.Food) {
 		return false
 	}
-	if !self.Spec.Equals(obj.Spec) {
+	if !f.Spec.Equals(obj.Spec) {
 		return false
 	}
 	return true
@@ -310,12 +310,12 @@ type Spec struct {
 	entities.Spec
 }
 
-func (self Spec) Equals(from Spec) bool {
-	return self.Spec.Equals(from.Spec)
+func (s Spec) Equals(from Spec) bool {
+	return s.Spec.Equals(from.Spec)
 }
 
-func (self Spec) Len() int {
-  return len(self.Spec)
+func (s Spec) Len() int {
+	return len(s.Spec)
 }
 
 var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)
@@ -334,8 +334,8 @@ type FoodService struct {
 	foodRepository *repositories.FoodRepository
 }
 
-func (self *FoodService) GetById(id uint) *Food {
-	f, _ := self.foodRepository.GetById(id)
+func (s *FoodService) GetById(id uint) *Food {
+	f, _ := s.foodRepository.GetById(id)
 	if f == nil {
 		return nil
 	}

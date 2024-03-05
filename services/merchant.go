@@ -9,7 +9,6 @@ import (
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
-	_ "github.com/universalmacro/merchant/dao/repositories"
 	"github.com/universalmacro/merchant/ioc"
 )
 
@@ -196,7 +195,7 @@ func (s *SubAccount) ID() uint {
 }
 
 func (s *SubAccount) PasswordMatching(password string) bool {
-	return s.PasswordMatching(password)
+	return s.Entity.PasswordMatching(password)
 }
 
 func (s *SubAccount) UpdatePassword(password string) {

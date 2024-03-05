@@ -26,8 +26,8 @@ type SpaceService struct {
 	spaceRepository *repositories.SpaceRepository
 }
 
-func (self *SpaceService) GetSpace(spaceId uint) *Space {
-	s, _ := self.spaceRepository.GetById(spaceId)
+func (sp *SpaceService) GetSpace(spaceId uint) *Space {
+	s, _ := sp.spaceRepository.GetById(spaceId)
 	if s == nil {
 		return nil
 	}
@@ -106,8 +106,8 @@ func (s *Space) Foods() []Food {
 	return result
 }
 
-func (self *Space) CreateFood(food *Food) (*Food, error) {
-	food.SpaceID = self.ID()
+func (s *Space) CreateFood(food *Food) (*Food, error) {
+	food.SpaceID = s.ID()
 	food.Create()
 	return food, nil
 }
@@ -135,11 +135,11 @@ func (s *Space) ListPrinters() []Printer {
 	return result
 }
 
-func (self *Space) FoodCategories() []string {
-	return self.Space.FoodCategories
+func (s *Space) FoodCategories() []string {
+	return s.Space.FoodCategories
 }
 
-func (self *Space) SetFoodCategories(categories ...string) *Space {
+func (s *Space) SetFoodCategories(categories ...string) *Space {
 	mapCategories := make(map[string]struct{})
 	var foodCategories dao.StringArray
 	for _, category := range categories {
@@ -149,21 +149,21 @@ func (self *Space) SetFoodCategories(categories ...string) *Space {
 		mapCategories[category] = struct{}{}
 		foodCategories = append(foodCategories, category)
 	}
-	self.Space.FoodCategories = foodCategories
-	return self
+	s.Space.FoodCategories = foodCategories
+	return s
 }
 
-func (self *Space) CreateOrder(account Account, tableLabel *string, foods []FoodSpec) Order {
+func (s *Space) CreateOrder(account Account, tableLabel *string, foods []FoodSpec) Order {
 	var foodSpace entities.FoodSpces
-	for _, food := range foods {
+	for i := range foods {
 		foodSpace = append(foodSpace, entities.FoodSpec{
-			Food: *food.Food.Food,
-			Spec: food.Spec.Spec,
+			Food: *foods[i].Food.Food,
+			Spec: foods[i].Spec.Spec,
 		})
 	}
 	order := &entities.Order{
 		SpaceAsset: entities.SpaceAsset{
-			SpaceID: self.ID(),
+			SpaceID: s.ID(),
 		},
 		TableLabel: tableLabel,
 		Status:     "SUBMITTED",

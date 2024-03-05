@@ -11,33 +11,33 @@ type Printer struct {
 	*entities.Printer
 }
 
-func (self *Printer) ID() uint {
-	return self.Printer.ID
+func (p *Printer) ID() uint {
+	return p.Printer.ID
 }
 
-func (self *Printer) StringID() string {
-	return utils.UintToString(self.ID())
+func (p *Printer) StringID() string {
+	return utils.UintToString(p.ID())
 }
 
-func (self *Printer) Delete() {
-	repositories.GetPrinterRepository().Delete(self.Printer)
+func (p *Printer) Delete() {
+	repositories.GetPrinterRepository().Delete(p.Printer)
 }
 
-func (self *Printer) SpaceID() uint {
-	return self.Printer.SpaceID
+func (p *Printer) SpaceID() uint {
+	return p.Printer.SpaceID
 }
 
-func (self *Printer) Space() *Space {
-	return GetSpaceService().GetSpace(self.SpaceID())
+func (p *Printer) Space() *Space {
+	return GetSpaceService().GetSpace(p.SpaceID())
 }
 
-func (self *Printer) Granted(account Account) bool {
-	return self.Space().Granted(account)
+func (p *Printer) Granted(account Account) bool {
+	return p.Space().Granted(account)
 }
 
-func (self *Printer) Submit() *Printer {
-	repositories.GetPrinterRepository().Update(self.Printer)
-	return self
+func (p *Printer) Submit() *Printer {
+	repositories.GetPrinterRepository().Update(p.Printer)
+	return p
 }
 
 func GetPrinterService() *PrinterService {

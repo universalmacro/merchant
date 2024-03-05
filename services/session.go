@@ -52,7 +52,7 @@ func (s *SessionService) CreateSubAccountSession(account, password, shortMerchan
 	return "", nil
 }
 
-func (self *SessionService) TokenVerification(token string) (Account, error) {
+func (s *SessionService) TokenVerification(token string) (Account, error) {
 	sp := strings.Split(token, " ")
 	if len(sp) != 2 {
 		return nil, errors.New("invalid token")
@@ -68,7 +68,7 @@ func (self *SessionService) TokenVerification(token string) (Account, error) {
 	}
 	if t == "MAIN" {
 		id, _ := claims["merchantId"].(string)
-		merchant := self.merchantService.GetMerchant(utils.StringToUint(id))
+		merchant := s.merchantService.GetMerchant(utils.StringToUint(id))
 		return merchant, nil
 	} else {
 		return nil, errors.New("invalid token")

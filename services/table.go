@@ -22,8 +22,8 @@ type TableService struct {
 	tableService *repositories.TableRepository
 }
 
-func (self *TableService) GetTable(tableId uint) *Table {
-	t, _ := self.tableService.GetById(tableId)
+func (s *TableService) GetTable(tableId uint) *Table {
+	t, _ := s.tableService.GetById(tableId)
 	if t == nil {
 		return nil
 	}

@@ -73,28 +73,35 @@ func ConvertPrinter(p *services.Printer) api.Printer {
 }
 
 func ConvertFoodSpec(f *services.FoodSpec) api.FoodSpec {
-  var spec []api.Spec
-  if f.Spec.Len() != 0 {
-    for _, s := range f.Spec.Spec {
-      spec = append(spec, api.Spec{
-        Attribute: s.Attribute,
-        Optioned:  s.Optioned,
-      })
-    }
-  }
-  return api.FoodSpec{
-    Food:      ConvertFood(f.Food),
-    Spec:      &spec,
-  }
+	var spec []api.Spec
+	if f.Spec.Len() != 0 {
+		for _, s := range f.Spec.Spec {
+			spec = append(spec, api.Spec{
+				Attribute: s.Attribute,
+				Optioned:  s.Optioned,
+			})
+		}
+	}
+	return api.FoodSpec{
+		Food: ConvertFood(f.Food),
+		Spec: &spec,
+	}
 }
 
 func ConvertOrder(o *services.Order) api.Order {
-  if o == nil {
-    return api.Order{}
-  }
-  return api.Order{
-    UpdatedAt:  o.UpdatedAt.Unix(),
-    CreatedAt:  o.CreatedAt.Unix(),
-    Status:     api.OrderStatus(o.Status),
-  }
+	if o == nil {
+		return api.Order{}
+	}
+	// var foods []api.Food
+	// for i := range o.Foods {
+	// 	foods = append(foods, ConvertFood(&o.Foods[i].Food))
+	// }
+	return api.Order{
+		Id:         o.StringID(),
+		UpdatedAt:  o.UpdatedAt.Unix(),
+		CreatedAt:  o.CreatedAt.Unix(),
+		Status:     api.OrderStatus(o.Status),
+		TableLabel: o.TableLabel,
+		Code:       o.Code(),
+	}
 }

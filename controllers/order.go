@@ -27,14 +27,14 @@ type OrderController struct {
 }
 
 // ListFoodPrinters implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) ListFoodPrinters(ctx *gin.Context) {
+func (oc *OrderController) ListFoodPrinters(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
-	food := self.foodService.GetById(id)
+	food := oc.foodService.GetById(id)
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -84,8 +84,8 @@ func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
 }
 
 // ListFoodCategories implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) ListFoodCategories(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
+func (oc *OrderController) ListFoodCategories(ctx *gin.Context) {
+	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -117,7 +117,7 @@ func (*OrderController) CancelOrder(ctx *gin.Context) {
 }
 
 // CreateFood implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) CreateFood(ctx *gin.Context) {
+func (oc *OrderController) CreateFood(ctx *gin.Context) {
 	account := getAccount(ctx)
 	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
@@ -144,6 +144,10 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 	}
 	var createOrderRequest api.CreateOrderRequest
 	ctx.ShouldBindJSON(&createOrderRequest)
+	if len(createOrderRequest.Foods) == 0 {
+		ctx.JSON(400, gin.H{"error": "no foods"})
+		return
+	}
 	order := space.CreateOrder(account,
 		createOrderRequest.TableLabel,
 		factories.NewFoodSpecs(createOrderRequest.Foods))
@@ -151,14 +155,14 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) DeleteFood(ctx *gin.Context) {
+func (oc *OrderController) DeleteFood(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
-	food := self.foodService.GetById(id)
+	food := oc.foodService.GetById(id)
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -172,14 +176,14 @@ func (self *OrderController) DeleteFood(ctx *gin.Context) {
 }
 
 // DeleteTable implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) DeleteTable(ctx *gin.Context) {
+func (oc *OrderController) DeleteTable(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
-	table := self.tableService.GetTable(id)
+	table := oc.tableService.GetTable(id)
 	if table == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -193,8 +197,8 @@ func (self *OrderController) DeleteTable(ctx *gin.Context) {
 }
 
 // GetFoodById implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) GetFoodById(ctx *gin.Context) {
-	food := self.foodService.GetById(server.UintID(ctx, "id"))
+func (oc *OrderController) GetFoodById(ctx *gin.Context) {
+	food := oc.foodService.GetById(server.UintID(ctx, "id"))
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -203,8 +207,8 @@ func (self *OrderController) GetFoodById(ctx *gin.Context) {
 }
 
 // ListFoods implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) ListFoods(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
+func (oc *OrderController) ListFoods(ctx *gin.Context) {
+	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -218,8 +222,8 @@ func (self *OrderController) ListFoods(ctx *gin.Context) {
 }
 
 // ListTables implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) ListTables(ctx *gin.Context) {
-	space := self.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
+func (oc *OrderController) ListTables(ctx *gin.Context) {
+	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -233,13 +237,13 @@ func (self *OrderController) ListTables(ctx *gin.Context) {
 }
 
 // UpdateFood implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) UpdateFood(ctx *gin.Context) {
+func (oc *OrderController) UpdateFood(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
-	food := self.foodService.GetById(server.UintID(ctx, "id"))
+	food := oc.foodService.GetById(server.UintID(ctx, "id"))
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -260,7 +264,7 @@ func (self *OrderController) UpdateFood(ctx *gin.Context) {
 }
 
 // UpdateFoodImage implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) UpdateFoodImage(ctx *gin.Context) {
+func (oc *OrderController) UpdateFoodImage(ctx *gin.Context) {
 	// TODO: implement
 	account := getAccount(ctx)
 	if account == nil {
@@ -268,7 +272,7 @@ func (self *OrderController) UpdateFoodImage(ctx *gin.Context) {
 		return
 	}
 	id := server.UintID(ctx, "id")
-	food := self.foodService.GetById(id)
+	food := oc.foodService.GetById(id)
 	if food == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return
@@ -287,7 +291,7 @@ func (self *OrderController) UpdateFoodImage(ctx *gin.Context) {
 }
 
 // CreateTable implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) CreateTable(ctx *gin.Context) {
+func (oc *OrderController) CreateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
 	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
@@ -304,14 +308,14 @@ func (self *OrderController) CreateTable(ctx *gin.Context) {
 }
 
 // UpdateTable implements merchantapiinterfaces.OrderApi.
-func (self *OrderController) UpdateTable(ctx *gin.Context) {
+func (oc *OrderController) UpdateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
-	table := self.tableService.GetTable(id)
+	table := oc.tableService.GetTable(id)
 	if table == nil {
 		ctx.JSON(404, gin.H{"error": "not found"})
 		return

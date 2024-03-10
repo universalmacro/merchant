@@ -306,10 +306,7 @@ func (f *FoodSpec) Price() int64 {
 	return total
 }
 
-func (f *FoodSpec) Equals(obj *FoodSpec) bool {
-	if obj == nil {
-		return false
-	}
+func (f *FoodSpec) Equals(obj FoodSpec) bool {
 	if !f.Food.Equals(obj.Food) {
 		return false
 	}

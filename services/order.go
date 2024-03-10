@@ -47,6 +47,11 @@ type Order struct {
 	*entities.Order
 }
 
+func (o *Order) SetTableLabel(label string) *Order {
+	o.Order.TableLabel = &label
+	return o
+}
+
 func (o *Order) StringID() string {
 	return utils.UintToString(o.ID)
 }
@@ -56,7 +61,7 @@ func (o *Order) Code() string {
 	return fmt.Sprintf("%d", code)
 }
 
-func (o *Order) FoodSpec() []FoodSpec {
+func (o *Order) FoodSpecs() []FoodSpec {
 	var foods []FoodSpec
 	for i := range o.Order.Foods {
 		foods = append(foods, NewFoodSpec(o.Order.Foods[i]))
@@ -72,15 +77,33 @@ func (o *Order) PrintCashier() {
 
 }
 
-func (o *Order) CancelItems() {
-
+func (o *Order) CancelItem(food FoodSpec) *Order {
+	foodSpecs := o.FoodSpecs()
+	for i := range foodSpecs {
+		if foodSpecs[i].Equals(food) {
+			o.Order.Foods = append(o.Order.Foods[:i], o.Order.Foods[i+1:]...)
+			break
+		}
+	}
+	return o
 }
 
-func (o *Order) AddItems(foods []FoodSpec) {
+func (o *Order) CancelItems(foods ...FoodSpec) *Order {
+	for i := range foods {
+		o.CancelItem(foods[i])
+	}
+	return o
+}
+
+func (o *Order) AddItems(foods ...FoodSpec) {
 
 }
 
 func (o *Order) Submit() *Order {
 	repositories.GetOrderRepository().Save(o.Order)
 	return o
+}
+
+func (o *Order) Space() *Space {
+	return GetSpaceService().GetSpace(o.Order.SpaceID)
 }

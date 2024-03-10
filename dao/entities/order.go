@@ -120,10 +120,7 @@ type FoodSpec struct {
 	Spec Spec `json:"spec"`
 }
 
-func (f *FoodSpec) Equals(from *FoodSpec) bool {
-	if from == nil {
-		return false
-	}
+func (f *FoodSpec) Equals(from FoodSpec) bool {
 	return true
 }
 

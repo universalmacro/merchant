@@ -92,8 +92,8 @@ func ConvertOrder(o *services.Order) api.Order {
 	if o == nil {
 		return api.Order{}
 	}
-	var foods []api.FoodSpec
-	foodSpecs := o.FoodSpec()
+	var foods []api.FoodSpec = make([]api.FoodSpec, 0)
+	foodSpecs := o.FoodSpecs()
 	for i := range foodSpecs {
 		foods = append(foods, ConvertFoodSpec(&foodSpecs[i]))
 	}

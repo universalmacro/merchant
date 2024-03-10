@@ -7,7 +7,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
 	github.com/universalmacro/common v0.0.0-20240310022614-1d02de668471
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240310014639-b1f6323cf662
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240310071756-377c3c4a34be
 	gorm.io/gorm v1.25.7
 )
 

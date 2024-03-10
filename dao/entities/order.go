@@ -120,40 +120,40 @@ type FoodSpec struct {
 	Spec Spec `json:"spec"`
 }
 
-func (self *FoodSpec) Equals(from *FoodSpec) bool {
+func (f *FoodSpec) Equals(from *FoodSpec) bool {
 	if from == nil {
 		return false
 	}
 	return true
 }
 
-func (self *FoodSpec) Scan(value any) error {
-	return json.Unmarshal(value.([]byte), self)
+func (f *FoodSpec) Scan(value any) error {
+	return json.Unmarshal(value.([]byte), f)
 }
 
-func (self FoodSpec) Value() (driver.Value, error) {
-	return json.Marshal(self)
+func (f FoodSpec) Value() (driver.Value, error) {
+	return json.Marshal(f)
 }
 
-func (self *FoodSpec) SetFood(food Food) *FoodSpec {
-	self.Food = food
-	return self
+func (f *FoodSpec) SetFood(food Food) *FoodSpec {
+	f.Food = food
+	return f
 }
 
-func (self *FoodSpec) SetSpec(spec Spec) *FoodSpec {
-	self.Spec = spec
-	return self
+func (f *FoodSpec) SetSpec(spec Spec) *FoodSpec {
+	f.Spec = spec
+	return f
 }
 
-func (self *FoodSpec) Price() int64 {
+func (f *FoodSpec) Price() int64 {
 	var total int64
-	for _, spec := range self.Spec {
-		option := self.Attributes.GetOption(spec.Attribute, spec.Optioned)
+	for _, spec := range f.Spec {
+		option := f.Attributes.GetOption(spec.Attribute, spec.Optioned)
 		if option != nil {
 			total += option.Extra
 		}
 	}
-	self.Food.Price += total
+	f.Food.Price += total
 	return total
 }
 
@@ -164,10 +164,10 @@ type SpecItem struct {
 	Optioned  string `json:"optioned"`
 }
 
-func (self Spec) Equals(from Spec) bool {
+func (f Spec) Equals(from Spec) bool {
 	selfMap := make(map[string]string)
 	fromMap := make(map[string]string)
-	for _, spec := range self {
+	for _, spec := range f {
 		selfMap[spec.Attribute] = spec.Optioned
 	}
 	for _, spec := range from {
@@ -197,10 +197,14 @@ func (a *Order) BeforeCreate(tx *gorm.DB) (err error) {
 
 type FoodSpces []FoodSpec
 
-func (self *FoodSpces) Scan(value any) error {
-	return json.Unmarshal(value.([]byte), self)
+func (FoodSpces) GormDataType() string {
+	return "JSON"
 }
 
-func (self FoodSpces) Value() (driver.Value, error) {
-	return json.Marshal(self)
+func (f *FoodSpces) Scan(value any) error {
+	return json.Unmarshal(value.([]byte), f)
+}
+
+func (f FoodSpces) Value() (driver.Value, error) {
+	return json.Marshal(f)
 }

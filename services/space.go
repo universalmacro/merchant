@@ -180,7 +180,10 @@ func (s *Space) CreateOrder(account Account, tableLabel *string, foods []FoodSpe
 	}
 	orderRepo := repositories.GetOrderRepository()
 	orderRepo.Save(order)
-	return Order{order}
+	o := Order{order}
+	o.PrintCashier()
+	o.PrintKitchen()
+	return o
 }
 
 func (space *Space) ListOrders() []Order {

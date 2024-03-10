@@ -1,7 +1,11 @@
 package controllers
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/server"
 	"github.com/universalmacro/common/utils"
 	api "github.com/universalmacro/merchant-api-interfaces"
@@ -16,6 +20,7 @@ func newOrderController() *OrderController {
 		spaceService:    services.GetSpaceService(),
 		tableService:    services.GetTableService(),
 		foodService:     services.GetFoodService(),
+		orderService:    services.GetOrderService(),
 	}
 }
 
@@ -24,6 +29,19 @@ type OrderController struct {
 	spaceService    *services.SpaceService
 	tableService    *services.TableService
 	foodService     *services.FoodService
+	orderService    *services.OrderService
+}
+
+// AddOrder implements merchantapiinterfaces.OrderApi.
+func (oc *OrderController) AddOrder(ctx *gin.Context) {
+	order := oc.orderService.GetById(server.UintID(ctx, "orderId"))
+	if order == nil {
+		ctx.JSON(404, gin.H{"error": "not found"})
+		return
+	}
+	var addOrderRequest api.AddOrderRequest
+	ctx.ShouldBindJSON(&addOrderRequest)
+	// order.AddItems()
 }
 
 // ListFoodPrinters implements merchantapiinterfaces.OrderApi.
@@ -148,9 +166,11 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": "no foods"})
 		return
 	}
-	order := space.CreateOrder(account,
+	order := space.CreateOrder(
+		account,
 		createOrderRequest.TableLabel,
-		factories.NewFoodSpecs(createOrderRequest.Foods))
+		factories.NewFoodSpecs(createOrderRequest.Foods),
+	)
 	order.PrintKitchen()
 	order.PrintCashier()
 	ctx.JSON(201, ConvertOrder(&order))
@@ -335,10 +355,23 @@ func (oc *OrderController) ListOrders(ctx *gin.Context) {
 	account := getAccount(ctx)
 	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
 		return
 	}
-	orders := space.ListOrders()
+	var options []dao.Option
+	if startAt, err := strconv.Atoi(ctx.Query("startAt")); err == nil {
+		options = append(options, dao.Where("created_at >= ?", time.Unix(int64(startAt), 0)))
+	}
+	if endAt, err := strconv.Atoi(ctx.Query("endAt")); err == nil {
+		options = append(options, dao.Where("created_at <= ?", time.Unix(int64(endAt), 0)))
+	}
+	options = append(options, dao.Where("space_id = ?", space.ID()))
+	if statuses := ctx.QueryArray("statuses"); len(statuses) > 0 {
+		options = append(options, dao.Where("status IN (?)", statuses))
+	}
+	if tableLabels := ctx.QueryArray("tableLabels"); len(tableLabels) > 0 {
+		options = append(options, dao.Where("table_label IN (?)", tableLabels))
+	}
+	orders := oc.orderService.List(options...)
 	result := make([]api.Order, len(orders))
 	for i := range orders {
 		result[i] = ConvertOrder(&orders[i])
@@ -348,12 +381,12 @@ func (oc *OrderController) ListOrders(ctx *gin.Context) {
 
 func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {
 	food.SetName(
-		saveFoodRequest.Name).SetDescription(
-		saveFoodRequest.Description).SetPrice(
-		saveFoodRequest.Price).SetFixedOffset(
-		saveFoodRequest.FixedOffset).SetImage(
-		saveFoodRequest.Image).SetCategories(
-		saveFoodRequest.Categories...)
+		saveFoodRequest.Name).
+		SetDescription(saveFoodRequest.Description).
+		SetPrice(saveFoodRequest.Price).
+		SetFixedOffset(saveFoodRequest.FixedOffset).
+		SetImage(saveFoodRequest.Image).
+		SetCategories(saveFoodRequest.Categories...)
 	if saveFoodRequest.Status != nil {
 		food.SetStatus(string(*saveFoodRequest.Status))
 	}

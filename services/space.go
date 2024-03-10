@@ -179,6 +179,16 @@ func (s *Space) CreateOrder(account Account, tableLabel *string, foods []FoodSpe
 		Foods:      foodSpace,
 	}
 	orderRepo := repositories.GetOrderRepository()
+	orders := GetOrderService().List(
+		dao.Where("space_id = ?", s.ID()),
+		dao.OrderBy("created_at", true),
+		dao.Limit(1),
+	)
+	var pickUpCode int64
+	if len(orders) > 0 {
+		pickUpCode = orders[0].PickUpCode + 1
+	}
+	order.PickUpCode = pickUpCode
 	orderRepo.Save(order)
 	o := Order{order}
 	o.PrintCashier()

@@ -157,7 +157,7 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 	account := getAccount(ctx)
 	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(404, gin.H{"error": "space not found"})
 		return
 	}
 	var createOrderRequest api.CreateOrderRequest

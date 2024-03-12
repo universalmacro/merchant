@@ -38,7 +38,7 @@ func (oc *OrderController) CreateBill(ctx *gin.Context) {
 	// account := getAccount(ctx)
 	// var createBillRequest api.CreateBillRequest
 	// ctx.ShouldBindJSON(&createBillRequest)
-
+	// space := oc.spaceService.GetSpace(createBillRequest.SpaceId)
 }
 
 // GetBill implements merchantapiinterfaces.OrderApi.

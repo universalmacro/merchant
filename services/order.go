@@ -8,15 +8,19 @@ import (
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
+	"github.com/universalmacro/merchant/ioc"
+	"gorm.io/gorm"
 )
 
 var GetOrderService = singleton.EagerSingleton(func() *OrderService {
 	return &OrderService{
+		db:        ioc.GetDBInstance(),
 		orderRepo: repositories.GetOrderRepository(),
 	}
 })
 
 type OrderService struct {
+	db        *gorm.DB
 	orderRepo *repositories.OrderRepository
 }
 
@@ -37,8 +41,40 @@ func (os *OrderService) List(options ...dao.Option) []Order {
 	return result
 }
 
+func (os *OrderService) CreateOrder(ac Account, spcesId uint, amount uint, orderId ...uint) *Bill {
+	space := GetSpaceService().GetSpace(spcesId)
+	if space == nil {
+		return nil
+	}
+	if !space.Granted(ac) {
+		return nil
+	}
+	orderEntities, _ := os.orderRepo.List(dao.Where("space_id = ?", spcesId), dao.Where("id IN (?)", orderId))
+	billEntity := entities.Bill{
+		CashierID: ac.ID(),
+		Amount:    amount,
+	}
+	db := os.db.Begin()
+	db.Create(&billEntity)
+	bill := &Bill{&billEntity}
+	for i := range orderEntities {
+		orderEntities[i].BillId = billEntity.ID
+		err := db.Save(&orderEntities[i]).Error
+		if err != nil {
+			db.Rollback()
+			return nil
+		}
+	}
+	db.Commit()
+	return bill
+}
+
 type Order struct {
 	*entities.Order
+}
+
+func (o *Order) Granted(account Account) bool {
+	return account.MerchantId() == o.Space().MerchantId
 }
 
 func (o *Order) SetTableLabel(label string) *Order {
@@ -111,4 +147,8 @@ func (o *Order) Submit() *Order {
 
 func (o *Order) Space() *Space {
 	return GetSpaceService().GetSpace(o.Order.SpaceID)
+}
+
+type Bill struct {
+	*entities.Bill
 }

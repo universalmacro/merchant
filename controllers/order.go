@@ -86,7 +86,9 @@ func (oc *OrderController) AddOrder(ctx *gin.Context) {
 	}
 	var addOrderRequest api.AddOrderRequest
 	ctx.ShouldBindJSON(&addOrderRequest)
-	// order.AddItems()
+	order.AddItems()
+	order.Submit()
+	ctx.JSON(200, ConvertOrder(order))
 }
 
 // ListFoodPrinters implements merchantapiinterfaces.OrderApi.

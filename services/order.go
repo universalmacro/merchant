@@ -91,8 +91,19 @@ func (o *Order) CancelItems(foods ...FoodSpec) *Order {
 	return o
 }
 
-func (o *Order) AddItems(foods ...FoodSpec) {
+func (o *Order) AddItem(food FoodSpec) *Order {
+	o.Order.Foods = append(o.Order.Foods, entities.FoodSpec{
+		Food: *food.Food.Food,
+		Spec: food.Spec.Spec,
+	})
+	return o
+}
 
+func (o *Order) AddItems(foods ...FoodSpec) *Order {
+	for i := range foods {
+		o.AddItem(foods[i])
+	}
+	return o
 }
 
 func (o *Order) Submit() *Order {

@@ -12,4 +12,4 @@ RUN go build -o /main
 FROM scratch
 COPY --from=build-stage /main /main
 EXPOSE 8080
-ENTRYPOINT [ "/main" ]
+CMD [ "/main" ]

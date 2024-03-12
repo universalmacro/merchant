@@ -12,14 +12,12 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var GetMerchantService = singleton.EagerSingleton(newMerchantService)
-
-func newMerchantService() *MerchantService {
+var GetMerchantService = singleton.EagerSingleton(func() *MerchantService {
 	return &MerchantService{
 		merchantRepository:   repositories.GetMerchantRepository(),
 		subAccountRepository: repositories.GetSubAccountRepository(),
 	}
-}
+})
 
 type MerchantService struct {
 	merchantRepository   *repositories.MerchantRepository

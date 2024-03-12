@@ -7,13 +7,11 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var GetFoodRepository = singleton.EagerSingleton(newFoodRepository)
-
-func newFoodRepository() *FoodRepository {
+var GetFoodRepository = singleton.EagerSingleton(func() *FoodRepository {
 	return &FoodRepository{
 		Repository: dao.NewRepository[entities.Food](ioc.GetDBInstance()),
 	}
-}
+})
 
 type FoodRepository struct {
 	*dao.Repository[entities.Food]

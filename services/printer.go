@@ -40,13 +40,11 @@ func (p *Printer) Submit() *Printer {
 	return p
 }
 
-var GetPrinterService = singleton.EagerSingleton(newPrinterService)
-
-func newPrinterService() *PrinterService {
+var GetPrinterService = singleton.EagerSingleton(func() *PrinterService {
 	return &PrinterService{
 		printerRepository: repositories.GetPrinterRepository(),
 	}
-}
+})
 
 type PrinterService struct {
 	printerRepository *repositories.PrinterRepository

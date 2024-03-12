@@ -10,14 +10,12 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var GetSessionService = singleton.EagerSingleton(newSessionServices)
-
-func newSessionServices() *SessionService {
+var GetSessionService = singleton.EagerSingleton(func() *SessionService {
 	return &SessionService{
 		merchantService:    GetMerchantService(),
 		merchantRepository: repositories.GetMerchantRepository(),
 	}
-}
+})
 
 type SessionService struct {
 	merchantService    *MerchantService

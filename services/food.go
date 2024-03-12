@@ -184,7 +184,7 @@ func (f *Food) Delete() {
 }
 
 func (f *Food) Space() *Space {
-	return newSpaceService().GetSpace(f.SpaceID)
+	return GetSpaceService().GetSpace(f.SpaceID)
 }
 
 func (f *Food) Granted(account Account) bool {

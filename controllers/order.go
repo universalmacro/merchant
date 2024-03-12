@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -59,53 +60,53 @@ func (oc *OrderController) PrintBill(ctx *gin.Context) {
 func (oc *OrderController) UpdateOrderTableLabel(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	order := oc.orderService.GetById(server.UintID(ctx, "orderId"))
 	if order == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !order.Space().Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	var updateOrderTableLabelRequest api.UpdateOrderTableLabelRequest
 	ctx.ShouldBindJSON(&updateOrderTableLabelRequest)
 	order.SetTableLabel(updateOrderTableLabelRequest.TableLabel).Submit()
-	ctx.JSON(200, ConvertOrder(order))
+	ctx.JSON(http.StatusOK, ConvertOrder(order))
 }
 
 // AddOrder implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) AddOrder(ctx *gin.Context) {
 	order := oc.orderService.GetById(server.UintID(ctx, "orderId"))
 	if order == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	var addOrderRequest api.AddOrderRequest
 	ctx.ShouldBindJSON(&addOrderRequest)
 	order.AddItems()
 	order.Submit()
-	ctx.JSON(200, ConvertOrder(order))
+	ctx.JSON(http.StatusOK, ConvertOrder(order))
 }
 
 // ListFoodPrinters implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) ListFoodPrinters(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
 	food := oc.foodService.GetById(id)
 	if food == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !food.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	printers := food.Printers()
@@ -113,24 +114,24 @@ func (oc *OrderController) ListFoodPrinters(ctx *gin.Context) {
 	for i := range printers {
 		result[i] = ConvertPrinter(&printers[i])
 	}
-	ctx.JSON(200, result)
+	ctx.JSON(http.StatusOK, result)
 }
 
 // UpdateFoodPrinters implements merchantapiinterfaces.OrderApi.
 func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
 	food := services.GetFoodService().GetById(id)
 	if food == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !food.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	var updateFoodPrintersRequest api.UpdateFoodPrintersRequest
@@ -145,24 +146,24 @@ func (*OrderController) UpdateFoodPrinters(ctx *gin.Context) {
 	for i := range printers {
 		result[i] = ConvertPrinter(&printers[i])
 	}
-	ctx.JSON(200, result)
+	ctx.JSON(http.StatusOK, result)
 }
 
 // ListFoodCategories implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) ListFoodCategories(ctx *gin.Context) {
 	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
-	ctx.JSON(200, space.FoodCategories())
+	ctx.JSON(http.StatusOK, space.FoodCategories())
 }
 
 // UpdateFoodCategories implements merchantapiinterfaces.OrderApi.
 func (*OrderController) UpdateFoodCategories(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
@@ -173,23 +174,23 @@ func (*OrderController) UpdateFoodCategories(ctx *gin.Context) {
 	ctx.ShouldBindJSON(&updateFoodCategoriesRequest)
 	space.SetFoodCategories(updateFoodCategoriesRequest...)
 	space.Submit()
-	ctx.JSON(200, space.FoodCategories())
+	ctx.JSON(http.StatusOK, space.FoodCategories())
 }
 
 // CancelOrder implements merchantapiinterfaces.OrderApi.
 func (*OrderController) CancelOrder(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	order := services.GetOrderService().GetById(server.UintID(ctx, "orderId"))
 	if order == nil {
-		ctx.JSON(404, gin.H{"error": "order not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "order not found"})
 		return
 	}
 	if !order.Space().Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	var cancelOrderRequest api.CancelOrderRequest
@@ -197,7 +198,7 @@ func (*OrderController) CancelOrder(ctx *gin.Context) {
 	foodSpecs := factories.NewFoodSpecs(cancelOrderRequest.Foods)
 	order.CancelItems(foodSpecs...)
 	order.Submit()
-	ctx.JSON(200, ConvertOrder(order))
+	ctx.JSON(http.StatusOK, ConvertOrder(order))
 }
 
 // CreateFood implements merchantapiinterfaces.OrderApi.
@@ -211,11 +212,11 @@ func (oc *OrderController) CreateFood(ctx *gin.Context) {
 	ctx.ShouldBindJSON(&createFoodRequest)
 	food, err := updateFood(createFoodRequest, services.NewEmptyFood())
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	space.CreateFood(food)
-	ctx.JSON(201, ConvertFood(food))
+	ctx.JSON(http.StatusCreated, ConvertFood(food))
 }
 
 // CreateOrder implements merchantapiinterfaces.OrderApi.
@@ -223,13 +224,13 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 	account := getAccount(ctx)
 	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "space not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "space not found"})
 		return
 	}
 	var createOrderRequest api.CreateOrderRequest
 	ctx.ShouldBindJSON(&createOrderRequest)
 	if len(createOrderRequest.Foods) == 0 {
-		ctx.JSON(400, gin.H{"error": "no foods"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no foods"})
 		return
 	}
 	order := space.CreateOrder(
@@ -239,66 +240,66 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 	)
 	order.PrintKitchen()
 	order.PrintCashier()
-	ctx.JSON(201, ConvertOrder(&order))
+	ctx.JSON(http.StatusCreated, ConvertOrder(&order))
 }
 
 // DeleteFood implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) DeleteFood(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
 	food := oc.foodService.GetById(id)
 	if food == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !food.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	food.Delete()
-	ctx.JSON(204, nil)
+	ctx.JSON(http.StatusNoContent, nil)
 }
 
 // DeleteTable implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) DeleteTable(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
 	table := oc.tableService.GetTable(id)
 	if table == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !table.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	table.Delete()
-	ctx.JSON(204, nil)
+	ctx.JSON(http.StatusNoContent, nil)
 }
 
 // GetFoodById implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) GetFoodById(ctx *gin.Context) {
 	food := oc.foodService.GetById(server.UintID(ctx, "id"))
 	if food == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
-	ctx.JSON(200, ConvertFood(food))
+	ctx.JSON(http.StatusOK, ConvertFood(food))
 }
 
 // ListFoods implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) ListFoods(ctx *gin.Context) {
 	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	foods := space.Foods()
@@ -306,14 +307,14 @@ func (oc *OrderController) ListFoods(ctx *gin.Context) {
 	for i := range foods {
 		result[i] = ConvertFood(&foods[i])
 	}
-	ctx.JSON(200, result)
+	ctx.JSON(http.StatusOK, result)
 }
 
 // ListTables implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) ListTables(ctx *gin.Context) {
 	space := oc.spaceService.GetSpace(server.UintID(ctx, "spaceId"))
 	if space == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	tables := space.ListTables()
@@ -321,34 +322,34 @@ func (oc *OrderController) ListTables(ctx *gin.Context) {
 	for i := range tables {
 		result[i] = ConvertTable(&tables[i])
 	}
-	ctx.JSON(200, result)
+	ctx.JSON(http.StatusOK, result)
 }
 
 // UpdateFood implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) UpdateFood(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	food := oc.foodService.GetById(server.UintID(ctx, "id"))
 	if food == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !food.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	var updateFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&updateFoodRequest)
 	_, err := updateFood(updateFoodRequest, food)
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	food.Submit()
-	ctx.JSON(200, ConvertFood(food))
+	ctx.JSON(http.StatusOK, ConvertFood(food))
 }
 
 // UpdateFoodImage implements merchantapiinterfaces.OrderApi.
@@ -356,26 +357,26 @@ func (oc *OrderController) UpdateFoodImage(ctx *gin.Context) {
 	// TODO: implement
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
 	food := oc.foodService.GetById(id)
 	if food == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !food.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	file, _ := ctx.FormFile("file")
 	if file == nil {
-		ctx.JSON(400, gin.H{"error": "no file"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no file"})
 		return
 	}
 	food.UpdateImage(file)
-	ctx.JSON(200, ConvertFood(food))
+	ctx.JSON(http.StatusOK, ConvertFood(food))
 }
 
 // CreateTable implements merchantapiinterfaces.OrderApi.
@@ -389,27 +390,27 @@ func (oc *OrderController) CreateTable(ctx *gin.Context) {
 	ctx.ShouldBindJSON(&createTableRequest)
 	table, err := space.CreateTable(createTableRequest.Label)
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(201, ConvertTable(table))
+	ctx.JSON(http.StatusCreated, ConvertTable(table))
 }
 
 // UpdateTable implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) UpdateTable(ctx *gin.Context) {
 	account := getAccount(ctx)
 	if account == nil {
-		ctx.JSON(401, gin.H{"error": "unauthorized"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	id := server.UintID(ctx, "id")
 	table := oc.tableService.GetTable(id)
 	if table == nil {
-		ctx.JSON(404, gin.H{"error": "not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
 	if !table.Granted(account) {
-		ctx.JSON(403, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}
 	var updateTableRequest api.SaveTableRequest
@@ -442,7 +443,7 @@ func (oc *OrderController) ListOrders(ctx *gin.Context) {
 	for i := range orders {
 		result[i] = ConvertOrder(&orders[i])
 	}
-	ctx.JSON(200, result)
+	ctx.JSON(http.StatusOK, result)
 }
 
 func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {

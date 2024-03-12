@@ -10,13 +10,11 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
-var GetOrderService = singleton.EagerSingleton(NewOrderService)
-
-func NewOrderService() *OrderService {
+var GetOrderService = singleton.EagerSingleton(func() *OrderService {
 	return &OrderService{
 		orderRepo: repositories.GetOrderRepository(),
 	}
-}
+})
 
 type OrderService struct {
 	orderRepo *repositories.OrderRepository

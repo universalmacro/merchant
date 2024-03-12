@@ -6,13 +6,11 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
-var GetTableService = singleton.EagerSingleton(newTableService)
-
-func newTableService() *TableService {
+var GetTableService = singleton.EagerSingleton(func() *TableService {
 	return &TableService{
 		tableService: repositories.GetTableRepository(),
 	}
-}
+})
 
 type TableService struct {
 	tableService *repositories.TableRepository

@@ -8,5 +8,8 @@ RUN git config --global url."https://${GIT_NAME}:${GIT_TOKEN}@github.com".instea
 RUN go mod download
 COPY . .
 RUN go build -o /main
+
+FROM scratch
+COPY --from=builder /main /main
 EXPOSE 8080
-CMD [ "/main" ]
+ENTRYPOINT [ "/main" ]

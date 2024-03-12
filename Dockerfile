@@ -1,17 +1,12 @@
-FROM golang:1.21.6 as builder
-
-WORKDIR /project/go-docker/
-
-# COPY go.mod, go.sum and download the dependencies
-COPY go.* ./
+FROM golang:1.21.6 as build-stage
+WORKDIR /app
+ARG GIT_TOKEN
+ARG GIT_NAME
+COPY go.mod go.sum ./
+RUN go env -w GOPRIVATE=github.com/universalmacro/*
+RUN git config --global url."https://${GIT_NAME}:${GIT_TOKEN}@github.com".insteadOf "https://github.com"
 RUN go mod download
-
-# COPY All things inside the project and build
 COPY . .
-RUN go build -o /project/go-docker/build/myapp .
-
-FROM scratch
-COPY --from=builder /project/go-docker/build/myapp /project/go-docker/build/myapp
-
+RUN go build -o /main
 EXPOSE 8080
-ENTRYPOINT [ "/project/go-docker/build/myapp" ]
+CMD [ "/main" ]

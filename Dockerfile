@@ -1,12 +1,32 @@
-FROM golang:1.21.6 as build-stage
-WORKDIR /app
-ARG GIT_TOKEN
-ARG GIT_NAME
-COPY go.mod go.sum ./
-RUN go env -w GOPRIVATE=github.com/universalmacro/*
-RUN git config --global url."https://${GIT_NAME}:${GIT_TOKEN}@github.com".insteadOf "https://github.com"
+FROM golang:1.21.6 AS build_base
+
+RUN apk add --no-cache git
+
+# Set the Current Working Directory inside the container
+WORKDIR /tmp/app
+
+# We want to populate the module cache based on the go.{mod,sum} files.
+COPY go.mod .
+COPY go.sum .
+
 RUN go mod download
+
 COPY . .
-RUN go build -o /main
+
+# Unit tests
+RUN CGO_ENABLED=0 go test -v
+
+# Build the Go app
+RUN go build -o ./out/app .
+
+# Start fresh from a smaller image
+FROM alpine:3.9 
+RUN apk add ca-certificates
+
+COPY --from=build_base /tmp/app/out/app /app/app
+
+# This container exposes port 8080 to the outside world
 EXPOSE 8080
-CMD [ "/main" ]
+
+# Run the binary program produced by `go install`
+CMD ["/app/app"]

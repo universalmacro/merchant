@@ -1,32 +1,17 @@
-FROM golang:1.21.6 AS build_base
+FROM golang:1.21.6 as builder
 
-RUN apk add --no-cache git
+WORKDIR /project/go-docker/
 
-# Set the Current Working Directory inside the container
-WORKDIR /tmp/app
-
-# We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod .
-COPY go.sum .
-
+# COPY go.mod, go.sum and download the dependencies
+COPY go.* ./
 RUN go mod download
 
+# COPY All things inside the project and build
 COPY . .
+RUN go build -o /project/go-docker/build/myapp .
 
-# Unit tests
-RUN CGO_ENABLED=0 go test -v
+FROM scratch
+COPY --from=builder /project/go-docker/build/myapp /project/go-docker/build/myapp
 
-# Build the Go app
-RUN go build -o ./out/app .
-
-# Start fresh from a smaller image
-FROM alpine:3.9 
-RUN apk add ca-certificates
-
-COPY --from=build_base /tmp/app/out/app /app/app
-
-# This container exposes port 8080 to the outside world
 EXPOSE 8080
-
-# Run the binary program produced by `go install`
-CMD ["/app/app"]
+ENTRYPOINT [ "/project/go-docker/build/myapp" ]

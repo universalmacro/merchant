@@ -40,11 +40,7 @@ func (p *Printer) Submit() *Printer {
 	return p
 }
 
-func GetPrinterService() *PrinterService {
-	return printerServiceSingleton.Get()
-}
-
-var printerServiceSingleton = singleton.SingletonFactory(newPrinterService, singleton.Lazy)
+var GetPrinterService = singleton.EagerSingleton(newPrinterService)
 
 func newPrinterService() *PrinterService {
 	return &PrinterService{

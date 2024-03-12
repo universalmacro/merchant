@@ -6,13 +6,9 @@ import (
 	"github.com/universalmacro/merchant/dao/entities"
 )
 
-var verificationCodeRepository = singleton.SingletonFactory(func() *VerificationCodeRepository {
+var GetVerificationCodeRepository = singleton.EagerSingleton(func() *VerificationCodeRepository {
 	return &VerificationCodeRepository{}
-}, singleton.Lazy)
-
-func GetVerificationCodeRepository() *VerificationCodeRepository {
-	return verificationCodeRepository.Get()
-}
+})
 
 type VerificationCodeRepository struct {
 	*dao.Repository[entities.VerificationCode]

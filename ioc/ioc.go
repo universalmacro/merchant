@@ -9,11 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var jwtSignerSingleton = singleton.SingletonFactory[auth.JwtSigner](createJwtSignerSingleton, singleton.Eager)
-
-func GetJwtSigner() *auth.JwtSigner {
-	return jwtSignerSingleton.Get()
-}
+var GetJwtSigner = auth.NewSingletonJwtSigner([]byte(GetConfig().GetString("jwt.secret")))
 
 func createJwtSignerSingleton() *auth.JwtSigner {
 	configClient := node.NewNodeConfigClient(
@@ -24,17 +20,14 @@ func createJwtSignerSingleton() *auth.JwtSigner {
 	return auth.NewJwtSigner([]byte(config.Server.JwtSecret))
 }
 
-var dbSingleton = singleton.SingletonFactory[gorm.DB](createDBInstance, singleton.Lazy)
-
-func GetDBInstance() *gorm.DB {
-	return dbSingleton.Get()
-}
+var GetDBInstance = singleton.EagerSingleton(createDBInstance)
 
 func createDBInstance() *gorm.DB {
+	viper := GetConfig()
 	configClient := node.NewNodeConfigClient(
-		config.GetString("core.apiUrl"),
-		config.GetString("node.id"),
-		config.GetString("node.secretKey"))
+		viper.GetString("core.apiUrl"),
+		viper.GetString("node.id"),
+		viper.GetString("node.secretKey"))
 	config := configClient.GetConfig()
 	database := config.Database
 	db, err := dao.NewConnection(

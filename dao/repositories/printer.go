@@ -7,15 +7,11 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var printerRepository = singleton.SingletonFactory(func() *PrinterRepository {
+var GetPrinterRepository = singleton.EagerSingleton(func() *PrinterRepository {
 	return &PrinterRepository{
 		Repository: dao.NewRepository[entities.Printer](ioc.GetDBInstance()),
 	}
-}, singleton.Lazy)
-
-func GetPrinterRepository() *PrinterRepository {
-	return printerRepository.Get()
-}
+})
 
 type PrinterRepository struct {
 	*dao.Repository[entities.Printer]

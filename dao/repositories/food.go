@@ -7,11 +7,7 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var foodRepositorySingleton = singleton.SingletonFactory(newFoodRepository, singleton.Lazy)
-
-func GetFoodRepository() *FoodRepository {
-	return foodRepositorySingleton.Get()
-}
+var GetFoodRepository = singleton.EagerSingleton(newFoodRepository)
 
 func newFoodRepository() *FoodRepository {
 	return &FoodRepository{

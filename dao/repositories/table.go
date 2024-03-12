@@ -7,15 +7,11 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var tableRepository = singleton.SingletonFactory(func() *TableRepository {
+var GetTableRepository = singleton.EagerSingleton(func() *TableRepository {
 	return &TableRepository{
 		Repository: dao.NewRepository[entities.Table](ioc.GetDBInstance()),
 	}
-}, singleton.Lazy)
-
-func GetTableRepository() *TableRepository {
-	return tableRepository.Get()
-}
+})
 
 type TableRepository struct {
 	*dao.Repository[entities.Table]

@@ -328,11 +328,7 @@ func (s Spec) Len() int {
 	return len(s.Spec)
 }
 
-var foodServiceSingleton = singleton.SingletonFactory(newFoodService, singleton.Eager)
-
-func GetFoodService() *FoodService {
-	return foodServiceSingleton.Get()
-}
+var GetFoodService = singleton.EagerSingleton(newFoodService)
 
 func newFoodService() *FoodService {
 	return &FoodService{

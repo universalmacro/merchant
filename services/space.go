@@ -10,11 +10,7 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
-var spaceServiceSingleton = singleton.SingletonFactory(newSpaceService, singleton.Eager)
-
-func GetSpaceService() *SpaceService {
-	return spaceServiceSingleton.Get()
-}
+var GetSpaceService = singleton.EagerSingleton(newSpaceService)
 
 func newSpaceService() *SpaceService {
 	return &SpaceService{

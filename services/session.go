@@ -10,11 +10,7 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var sessionServiceSingleton = singleton.SingletonFactory(newSessionServices, singleton.Eager)
-
-func GetSessionService() *SessionService {
-	return sessionServiceSingleton.Get()
-}
+var GetSessionService = singleton.EagerSingleton(newSessionServices)
 
 func newSessionServices() *SessionService {
 	return &SessionService{

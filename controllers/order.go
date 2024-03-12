@@ -32,6 +32,29 @@ type OrderController struct {
 	orderService    *services.OrderService
 }
 
+// CreateBill implements merchantapiinterfaces.OrderApi.
+func (oc *OrderController) CreateBill(ctx *gin.Context) {
+	// account := getAccount(ctx)
+	// var createBillRequest api.CreateBillRequest
+	// ctx.ShouldBindJSON(&createBillRequest)
+
+}
+
+// GetBill implements merchantapiinterfaces.OrderApi.
+func (oc *OrderController) GetBill(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// ListBills implements merchantapiinterfaces.OrderApi.
+func (oc *OrderController) ListBills(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
+// PrintBill implements merchantapiinterfaces.OrderApi.
+func (oc *OrderController) PrintBill(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
 // UpdateOrderTableLabel implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) UpdateOrderTableLabel(ctx *gin.Context) {
 	account := getAccount(ctx)

@@ -10,11 +10,7 @@ import (
 	"github.com/universalmacro/merchant/dao/repositories"
 )
 
-func GetOrderService() *OrderService {
-	return orderServiceSingleton.Get()
-}
-
-var orderServiceSingleton = singleton.SingletonFactory(NewOrderService, singleton.Eager)
+var GetOrderService = singleton.EagerSingleton(NewOrderService)
 
 func NewOrderService() *OrderService {
 	return &OrderService{

@@ -7,11 +7,7 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var orderRepositorySingleton = singleton.SingletonFactory(newOrderRepository, singleton.Lazy)
-
-func GetOrderRepository() *OrderRepository {
-	return orderRepositorySingleton.Get()
-}
+var GetOrderRepository = singleton.EagerSingleton(newOrderRepository)
 
 func newOrderRepository() *OrderRepository {
 	return &OrderRepository{

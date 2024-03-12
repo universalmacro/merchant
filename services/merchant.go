@@ -12,11 +12,7 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-func GetMerchantService() *MerchantService {
-	return merchantSingleton.Get()
-}
-
-var merchantSingleton = singleton.SingletonFactory(newMerchantService, singleton.Lazy)
+var GetMerchantService = singleton.EagerSingleton(newMerchantService)
 
 func newMerchantService() *MerchantService {
 	return &MerchantService{

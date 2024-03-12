@@ -7,15 +7,11 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
-var spaceRepository = singleton.SingletonFactory(func() *SpaceRepository {
+var GetSpaceRepository = singleton.EagerSingleton(func() *SpaceRepository {
 	return &SpaceRepository{
 		Repository: dao.NewRepository[entities.Space](ioc.GetDBInstance()),
 	}
-}, singleton.Lazy)
-
-func GetSpaceRepository() *SpaceRepository {
-	return spaceRepository.Get()
-}
+})
 
 type SpaceRepository struct {
 	*dao.Repository[entities.Space]

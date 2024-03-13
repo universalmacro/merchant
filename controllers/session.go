@@ -24,10 +24,7 @@ func (sc *SessionController) CreateSession(ctx *gin.Context) {
 	ctx.ShouldBindJSON(&request)
 	token, err := sc.sessionService.CreateSession(*request.Account, *request.Password, request.ShortMerchantId)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"code":    "Unauthorized",
-			"message": err.Error(),
-		})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, api.Session{

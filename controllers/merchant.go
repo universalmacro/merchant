@@ -20,6 +20,12 @@ type MerchantController struct {
 	merchantService *services.MerchantService
 }
 
+// SendMerchantVerificationCode implements merchantapiinterfaces.MerchantApi.
+func (c *MerchantController) SendMerchantVerificationCode(ctx *gin.Context) {
+	var createVerificationCodeRequest api.CreateVerificationCodeRequest
+	ctx.ShouldBindJSON(&createVerificationCodeRequest)
+}
+
 // GetSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.
 func (*MerchantController) GetSelfMerchantConfig(ctx *gin.Context) {
 	panic("unimplemented")

@@ -120,7 +120,7 @@ func (*MerchantController) UpdateMerchant(ctx *gin.Context) {
 
 // UpdateMerchantPassword implements merchantapiinterfaces.MerchantApi.
 func (c *MerchantController) UpdateMerchantPassword(ctx *gin.Context) {
-	id := server.UintID(ctx, "id")
+	id := server.UintID(ctx, "merchantId")
 	merchant := c.merchantService.GetMerchant(id)
 	if merchant == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "merchant not found"})

@@ -134,19 +134,25 @@ func (o *Order) CancelItems(foods ...FoodSpec) (*Order, error) {
 	return o, nil
 }
 
-func (o *Order) AddItem(food FoodSpec) *Order {
+func (o *Order) AddItem(food FoodSpec) (*Order, error) {
+	if o.Status != "SUBBMITTED" {
+		return o, fmt.Errorf("order status is not submitted")
+	}
 	o.Order.Foods = append(o.Order.Foods, entities.FoodSpec{
 		Food: *food.Food.Food,
 		Spec: food.Spec.Spec,
 	})
-	return o
+	return o, nil
 }
 
-func (o *Order) AddItems(foods ...FoodSpec) *Order {
+func (o *Order) AddItems(foods ...FoodSpec) (*Order, error) {
 	for i := range foods {
-		o.AddItem(foods[i])
+		_, err := o.AddItem(foods[i])
+		if err != nil {
+			return o, err
+		}
 	}
-	return o
+	return o, nil
 }
 
 func (o *Order) Submit() *Order {

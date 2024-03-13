@@ -87,7 +87,11 @@ func (oc *OrderController) AddOrder(ctx *gin.Context) {
 	}
 	var addOrderRequest api.AddOrderRequest
 	ctx.ShouldBindJSON(&addOrderRequest)
-	order.AddItems(factories.NewFoodSpecs(addOrderRequest.Foods)...)
+	_, err := order.AddItems(factories.NewFoodSpecs(addOrderRequest.Foods)...)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	order.Submit()
 	ctx.JSON(http.StatusOK, ConvertOrder(order))
 }

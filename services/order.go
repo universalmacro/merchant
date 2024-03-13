@@ -52,9 +52,10 @@ func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*
 		return nil, errors.New("permission denied")
 	}
 	billEntity := entities.Bill{
-		CashierID: ac.ID(),
-		Amount:    amount,
-		SpaceID:   space.ID(),
+		MerchantId: ac.MerchantId(),
+		CashierID:  ac.ID(),
+		Amount:     amount,
+		SpaceID:    space.ID(),
 	}
 	db := os.db.Begin()
 	db.Create(&billEntity)

@@ -94,7 +94,7 @@ func (oc *OrderController) PrintBill(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusCreated, ConvertBill(bill))
+	ctx.JSON(http.StatusOK, ConvertBill(bill))
 }
 
 // UpdateOrderTableLabel implements merchantapiinterfaces.OrderApi.

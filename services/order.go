@@ -204,7 +204,7 @@ func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderId
 		err := db.Save(&orderEntities[i]).Error
 		if err != nil {
 			db.Rollback()
-			return nil, errors.New("create order failed")
+			return nil, err
 		}
 	}
 	if submit {

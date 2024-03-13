@@ -122,6 +122,9 @@ func (o *Order) CancelItems(foods ...FoodSpec) *Order {
 	for i := range foods {
 		o.CancelItem(foods[i])
 	}
+	if len(o.Order.Foods) == 0 {
+		o.Order.Status = "CANCELLED"
+	}
 	return o
 }
 

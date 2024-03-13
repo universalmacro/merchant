@@ -103,7 +103,7 @@ func (s *Space) ListTables() []Table {
 func (s *Space) Foods(options ...dao.Option) []Food {
 	db := ioc.GetDBInstance()
 	options = append(options, dao.Where("space_id = ?", s.ID()))
-	dao.ApplyOptions(db, options...)
+	db = dao.ApplyOptions(db, options...)
 	var foods []entities.Food
 	db.Find(&foods, "space_id = ?", s.ID())
 	result := make([]Food, len(foods))

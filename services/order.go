@@ -55,6 +55,18 @@ func (os *OrderService) PrintBill(ac Account, amount uint, orderIds ...uint) (*B
 	return bill, err
 }
 
+func (os *OrderService) ListBills(options ...dao.Option) []Bill {
+	db := ioc.GetDBInstance()
+	var billEntities []entities.Bill
+	db = dao.ApplyOptions(db, options...)
+	db.Find(&billEntities)
+	var result []Bill
+	for i := range billEntities {
+		result = append(result, Bill{&billEntities[i]})
+	}
+	return result
+}
+
 func (os *OrderService) GetBill(id uint) *Bill {
 	db := ioc.GetDBInstance()
 	var billEntity entities.Bill

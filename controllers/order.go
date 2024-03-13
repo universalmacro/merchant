@@ -74,7 +74,28 @@ func (oc *OrderController) GetBill(ctx *gin.Context) {
 
 // ListBills implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) ListBills(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	var options []dao.Option
+	options = append(options, dao.Where("merchant_id = ?", account.MerchantId()))
+	if startAt, err := strconv.Atoi(ctx.Query("startAt")); err == nil {
+		options = append(options, dao.Where("created_at >= ?", time.Unix(int64(startAt), 0)))
+	}
+	if endAt, err := strconv.Atoi(ctx.Query("endAt")); err == nil {
+		options = append(options, dao.Where("created_at <= ?", time.Unix(int64(endAt), 0)))
+	}
+	if spaceId := ctx.Query("spaceId"); spaceId != "" {
+		options = append(options, dao.Where("space_id = ?", spaceId))
+	}
+	bills := oc.orderService.ListBills(options...)
+	result := make([]api.Bill, len(bills))
+	for i, bill := range bills {
+		result[i] = ConvertBill(&bill)
+	}
+	ctx.JSON(http.StatusOK, result)
 }
 
 // PrintBill implements merchantapiinterfaces.OrderApi.

@@ -8,6 +8,7 @@ import (
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
+	"github.com/universalmacro/merchant/ioc"
 )
 
 var GetSpaceService = singleton.EagerSingleton(func() *SpaceService {
@@ -99,9 +100,12 @@ func (s *Space) ListTables() []Table {
 	return result
 }
 
-func (s *Space) Foods() []Food {
-	foodRepo := repositories.GetFoodRepository()
-	foods, _ := foodRepo.FindMany("space_id = ?", s.ID())
+func (s *Space) Foods(options ...dao.Option) []Food {
+	db := ioc.GetDBInstance()
+	options = append(options, dao.Where("space_id = ?", s.ID()))
+	dao.ApplyOptions(db, options...)
+	var foods []entities.Food
+	db.Find(&foods, "space_id = ?", s.ID())
 	result := make([]Food, len(foods))
 	for i := range foods {
 		result[i] = Food{&foods[i]}

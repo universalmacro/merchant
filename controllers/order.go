@@ -192,10 +192,6 @@ func (oc *OrderController) ListFoodCategories(ctx *gin.Context) {
 // UpdateFoodCategories implements merchantapiinterfaces.OrderApi.
 func (*OrderController) UpdateFoodCategories(ctx *gin.Context) {
 	account := getAccount(ctx)
-	if account == nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
 	space := grantedSpace(ctx, server.UintID(ctx, "spaceId"), account)
 	if space == nil {
 		return
@@ -336,7 +332,11 @@ func (oc *OrderController) ListFoods(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
-	foods := space.Foods()
+	var options []dao.Option
+	if statuses := ctx.QueryArray("statuses"); len(statuses) > 0 {
+		options = append(options, dao.Where("status IN (?)", statuses))
+	}
+	foods := space.Foods(options...)
 	result := make([]api.Food, len(foods))
 	for i := range foods {
 		result[i] = ConvertFood(&foods[i])
@@ -388,7 +388,6 @@ func (oc *OrderController) UpdateFood(ctx *gin.Context) {
 
 // UpdateFoodImage implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) UpdateFoodImage(ctx *gin.Context) {
-	// TODO: implement
 	account := getAccount(ctx)
 	if account == nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})

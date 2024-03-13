@@ -7,8 +7,9 @@ import (
 
 type Bill struct {
 	gorm.Model
-	CashierID uint `json:"cashierId"`
-	Amount    uint `json:"amount"`
+	MerchantId uint `json:"merchantId"`
+	CashierID  uint `json:"cashierId"`
+	Amount     uint `json:"amount"`
 }
 
 func (a *Bill) BeforeCreate(tx *gorm.DB) (err error) {

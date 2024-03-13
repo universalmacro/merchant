@@ -79,6 +79,13 @@ func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*
 	return bill, nil
 }
 
+func (os *OrderService) GetBill(id uint) *Bill {
+	db := ioc.GetDBInstance()
+	var billEntity entities.Bill
+	db.Find(&billEntity, id)
+	return &Bill{&billEntity}
+}
+
 type Order struct {
 	*entities.Order
 }

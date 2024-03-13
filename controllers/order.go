@@ -55,7 +55,21 @@ func (oc *OrderController) CreateBill(ctx *gin.Context) {
 
 // GetBill implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) GetBill(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	if account == nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	bill := oc.orderService.GetBill(server.UintID(ctx, "id"))
+	if bill == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+		return
+	}
+	if !bill.Granted(account) {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		return
+	}
+	ctx.JSON(http.StatusOK, ConvertBill(bill))
 }
 
 // ListBills implements merchantapiinterfaces.OrderApi.

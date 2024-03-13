@@ -10,6 +10,10 @@ type Bill struct {
 	*entities.Bill
 }
 
+func (b *Bill) Granted(account Account) bool {
+	return b.MerchantId == account.MerchantId()
+}
+
 func (b *Bill) Orders() []Order {
 	var orders []Order
 	orderRepo := repositories.GetOrderRepository()

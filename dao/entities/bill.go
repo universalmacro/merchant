@@ -8,6 +8,7 @@ import (
 type Bill struct {
 	gorm.Model
 	MerchantId uint `json:"merchantId"`
+	SpaceID    uint `json:"spaceId"`
 	CashierID  uint `json:"cashierId"`
 	Amount     uint `json:"amount"`
 }

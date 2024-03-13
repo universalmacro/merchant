@@ -54,6 +54,7 @@ func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*
 	billEntity := entities.Bill{
 		CashierID: ac.ID(),
 		Amount:    amount,
+		SpaceID:   space.ID(),
 	}
 	db := os.db.Begin()
 	db.Create(&billEntity)

@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/universalmacro/common/config"
+	"github.com/universalmacro/merchant/ioc"
 	"github.com/universalmacro/merchant/services"
 )
 
-var secretKey = config.GetString("node.secretKey")
+var secretKey = ioc.GetConfig().GetString("node.secretKey")
 
 type Headers struct {
 	ApiKey        string

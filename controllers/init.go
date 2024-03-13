@@ -9,10 +9,10 @@ import (
 	_ "github.com/universalmacro/merchant/services"
 )
 
-var router *gin.Engine
-var VERSION = "0.0.1"
+const VERSION = "0.0.2"
 
 func Init(addr ...string) {
+	var router *gin.Engine
 	gin.SetMode(gin.ReleaseMode)
 	router = gin.Default()
 	var merchantController = newMerchantController()

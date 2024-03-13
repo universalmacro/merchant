@@ -108,7 +108,7 @@ func (o *Order) PrintCashier() {
 }
 
 func (o *Order) CancelItem(food FoodSpec) (*Order, error) {
-	if o.Status != "SUBBMITTED" {
+	if o.Status != "SUBMITTED" {
 		return nil, fmt.Errorf("order status is not submitted")
 	}
 	foodSpecs := o.FoodSpecs()
@@ -135,7 +135,7 @@ func (o *Order) CancelItems(foods ...FoodSpec) (*Order, error) {
 }
 
 func (o *Order) AddItem(food FoodSpec) (*Order, error) {
-	if o.Status != "SUBBMITTED" {
+	if o.Status != "SUBMITTED" {
 		return o, fmt.Errorf("order status is not submitted")
 	}
 	o.Order.Foods = append(o.Order.Foods, entities.FoodSpec{

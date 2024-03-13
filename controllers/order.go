@@ -196,7 +196,11 @@ func (*OrderController) CancelOrder(ctx *gin.Context) {
 	var cancelOrderRequest api.CancelOrderRequest
 	ctx.ShouldBindJSON(&cancelOrderRequest)
 	foodSpecs := factories.NewFoodSpecs(cancelOrderRequest.Foods)
-	order.CancelItems(foodSpecs...)
+	_, err := order.CancelItems(foodSpecs...)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	order.Submit()
 	ctx.JSON(http.StatusOK, ConvertOrder(order))
 }

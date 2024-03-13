@@ -107,7 +107,10 @@ func (o *Order) PrintCashier() {
 
 }
 
-func (o *Order) CancelItem(food FoodSpec) *Order {
+func (o *Order) CancelItem(food FoodSpec) (*Order, error) {
+	if o.Status != "SUBBMITTED" {
+		return nil, fmt.Errorf("order status is not submitted")
+	}
 	foodSpecs := o.FoodSpecs()
 	for i := range foodSpecs {
 		if foodSpecs[i].Equals(food) {
@@ -115,17 +118,20 @@ func (o *Order) CancelItem(food FoodSpec) *Order {
 			break
 		}
 	}
-	return o
+	return o, nil
 }
 
-func (o *Order) CancelItems(foods ...FoodSpec) *Order {
+func (o *Order) CancelItems(foods ...FoodSpec) (*Order, error) {
 	for i := range foods {
-		o.CancelItem(foods[i])
+		_, err := o.CancelItem(foods[i])
+		if err != nil {
+			return o, err
+		}
 	}
 	if len(o.Order.Foods) == 0 {
 		o.Order.Status = "CANCELLED"
 	}
-	return o
+	return o, nil
 }
 
 func (o *Order) AddItem(food FoodSpec) *Order {

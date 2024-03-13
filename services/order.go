@@ -171,7 +171,7 @@ func (o *Order) Space() *Space {
 
 func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderIds ...uint) (*Bill, error) {
 	var orderEntities []entities.Order
-	db.Find(&orderEntities, dao.Where("id IN (?)", orderIds))
+	db.Find(&orderEntities, orderIds)
 	if len(orderEntities) == 0 {
 		return nil, errors.New("order ids is empty")
 	}

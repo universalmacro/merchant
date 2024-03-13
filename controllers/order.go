@@ -33,6 +33,11 @@ type OrderController struct {
 	orderService    *services.OrderService
 }
 
+// GetBillStatistics implements merchantapiinterfaces.OrderApi.
+func (oc *OrderController) GetBillStatistics(ctx *gin.Context) {
+	panic("unimplemented")
+}
+
 // CreateBill implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) CreateBill(ctx *gin.Context) {
 	account := getAccount(ctx)

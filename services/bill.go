@@ -23,3 +23,7 @@ func (b *Bill) Orders() []Order {
 	}
 	return orders
 }
+
+func (b *Bill) Print() {
+
+}

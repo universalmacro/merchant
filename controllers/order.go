@@ -79,7 +79,22 @@ func (oc *OrderController) ListBills(ctx *gin.Context) {
 
 // PrintBill implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) PrintBill(ctx *gin.Context) {
-	panic("unimplemented")
+	account := getAccount(ctx)
+	var createBillRequest api.CreateBillRequest
+	ctx.ShouldBindJSON(&createBillRequest)
+	var orderIds []uint
+	for i := range createBillRequest.OrderIds {
+		orderIds = append(orderIds, utils.StringToUint(createBillRequest.OrderIds[i]))
+	}
+	bill, err := oc.orderService.PrintBill(
+		account,
+		uint(createBillRequest.Amount),
+		orderIds...)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, ConvertBill(bill))
 }
 
 // UpdateOrderTableLabel implements merchantapiinterfaces.OrderApi.

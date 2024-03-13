@@ -43,42 +43,16 @@ func (os *OrderService) List(options ...dao.Option) []Order {
 }
 
 func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*Bill, error) {
-	orderEntities, _ := os.orderRepo.List(dao.Where("id IN (?)", orderIds))
-	if len(orderEntities) == 0 {
-		return nil, errors.New("order ids is empty")
+	return createBillHelper(os.db, true, ac, amount, orderIds...)
+}
+
+func (os *OrderService) PrintBill(ac Account, amount uint, orderIds ...uint) (*Bill, error) {
+	bill, err := createBillHelper(os.db, false, ac, amount, orderIds...)
+	if err != nil {
+		return nil, err
 	}
-	space := GetSpaceService().GetSpace(orderEntities[0].SpaceID)
-	if !space.Granted(ac) {
-		return nil, errors.New("permission denied")
-	}
-	billEntity := entities.Bill{
-		MerchantId: ac.MerchantId(),
-		CashierID:  ac.ID(),
-		Amount:     amount,
-		SpaceID:    space.ID(),
-	}
-	db := os.db.Begin()
-	db.Create(&billEntity)
-	bill := &Bill{&billEntity}
-	for i, orderEntity := range orderEntities {
-		if orderEntity.Status != "SUBMITTED" {
-			db.Rollback()
-			return nil, errors.New("order status is not submitted")
-		}
-		if space.ID() != orderEntity.SpaceID {
-			db.Rollback()
-			return nil, errors.New("order is not in the same space as the bill")
-		}
-		orderEntities[i].BillId = &billEntity.ID
-		orderEntities[i].Status = "COMPLETED"
-		err := db.Save(&orderEntities[i]).Error
-		if err != nil {
-			db.Rollback()
-			return nil, errors.New("create order failed")
-		}
-	}
-	db.Commit()
-	return bill, nil
+	bill.Print()
+	return bill, err
 }
 
 func (os *OrderService) GetBill(id uint) *Bill {
@@ -181,4 +155,48 @@ func (o *Order) Submit() *Order {
 
 func (o *Order) Space() *Space {
 	return GetSpaceService().GetSpace(o.Order.SpaceID)
+}
+
+func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderIds ...uint) (*Bill, error) {
+	var orderEntities []entities.Order
+	db.Find(&orderEntities, dao.Where("id IN (?)", orderIds))
+	if len(orderEntities) == 0 {
+		return nil, errors.New("order ids is empty")
+	}
+	space := GetSpaceService().GetSpace(orderEntities[0].SpaceID)
+	if !space.Granted(ac) {
+		return nil, errors.New("permission denied")
+	}
+	billEntity := entities.Bill{
+		MerchantId: ac.MerchantId(),
+		CashierID:  ac.ID(),
+		Amount:     amount,
+		SpaceID:    space.ID(),
+	}
+	if submit {
+		db = db.Begin()
+	}
+	db.Create(&billEntity)
+	bill := &Bill{&billEntity}
+	for i, orderEntity := range orderEntities {
+		if orderEntity.Status != "SUBMITTED" {
+			db.Rollback()
+			return nil, errors.New("order status is not submitted")
+		}
+		if space.ID() != orderEntity.SpaceID {
+			db.Rollback()
+			return nil, errors.New("order is not in the same space as the bill")
+		}
+		orderEntities[i].BillId = &billEntity.ID
+		orderEntities[i].Status = "COMPLETED"
+		err := db.Save(&orderEntities[i]).Error
+		if err != nil {
+			db.Rollback()
+			return nil, errors.New("create order failed")
+		}
+	}
+	if submit {
+		db.Commit()
+	}
+	return bill, nil
 }

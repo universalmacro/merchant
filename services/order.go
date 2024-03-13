@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/universalmacro/common/dao"
@@ -41,15 +42,15 @@ func (os *OrderService) List(options ...dao.Option) []Order {
 	return result
 }
 
-func (os *OrderService) CreateOrder(ac Account, spcesId uint, amount uint, orderId ...uint) *Bill {
-	space := GetSpaceService().GetSpace(spcesId)
-	if space == nil {
-		return nil
+func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*Bill, error) {
+	orderEntities, _ := os.orderRepo.List(dao.Where("id IN (?)", orderIds))
+	if len(orderEntities) == 0 {
+		return nil, errors.New("order ids is empty")
 	}
+	space := GetSpaceService().GetSpace(orderEntities[0].SpaceID)
 	if !space.Granted(ac) {
-		return nil
+		return nil, errors.New("permission denied")
 	}
-	orderEntities, _ := os.orderRepo.List(dao.Where("space_id = ?", spcesId), dao.Where("id IN (?)", orderId))
 	billEntity := entities.Bill{
 		CashierID: ac.ID(),
 		Amount:    amount,
@@ -57,16 +58,25 @@ func (os *OrderService) CreateOrder(ac Account, spcesId uint, amount uint, order
 	db := os.db.Begin()
 	db.Create(&billEntity)
 	bill := &Bill{&billEntity}
-	for i := range orderEntities {
+	for i, orderEntity := range orderEntities {
+		if orderEntity.Status != "SUBMITTED" {
+			db.Rollback()
+			return nil, errors.New("order status is not submitted")
+		}
+		if space.ID() != orderEntity.SpaceID {
+			db.Rollback()
+			return nil, errors.New("order is not in the same space as the bill")
+		}
 		orderEntities[i].BillId = billEntity.ID
+		orderEntities[i].Status = "COMPLETED"
 		err := db.Save(&orderEntities[i]).Error
 		if err != nil {
 			db.Rollback()
-			return nil
+			return nil, errors.New("create order failed")
 		}
 	}
 	db.Commit()
-	return bill
+	return bill, nil
 }
 
 type Order struct {
@@ -162,8 +172,4 @@ func (o *Order) Submit() *Order {
 
 func (o *Order) Space() *Space {
 	return GetSpaceService().GetSpace(o.Order.SpaceID)
-}
-
-type Bill struct {
-	*entities.Bill
 }

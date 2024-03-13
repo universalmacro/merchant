@@ -107,3 +107,16 @@ func ConvertOrder(o *services.Order) api.Order {
 		Foods:      foods,
 	}
 }
+
+func ConvertBill(b *services.Bill) api.Bill {
+	var orders []api.Order
+	for _, order := range b.Orders() {
+		orders = append(orders, ConvertOrder(&order))
+	}
+	return api.Bill{
+		Orders:    orders,
+		Id:        utils.UintToString(b.ID),
+		Amount:    int64(b.Amount),
+		CreatedAt: b.CreatedAt.Unix(),
+	}
+}

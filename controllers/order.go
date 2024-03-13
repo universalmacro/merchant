@@ -35,10 +35,22 @@ type OrderController struct {
 
 // CreateBill implements merchantapiinterfaces.OrderApi.
 func (oc *OrderController) CreateBill(ctx *gin.Context) {
-	// account := getAccount(ctx)
-	// var createBillRequest api.CreateBillRequest
-	// ctx.ShouldBindJSON(&createBillRequest)
-	// space := oc.spaceService.GetSpace(createBillRequest.SpaceId)
+	account := getAccount(ctx)
+	var createBillRequest api.CreateBillRequest
+	ctx.ShouldBindJSON(&createBillRequest)
+	var orderIds []uint
+	for i := range createBillRequest.OrderIds {
+		orderIds = append(orderIds, utils.StringToUint(createBillRequest.OrderIds[i]))
+	}
+	bill, err := oc.orderService.CreateBill(
+		account,
+		uint(createBillRequest.Amount),
+		orderIds...)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, ConvertBill(bill))
 }
 
 // GetBill implements merchantapiinterfaces.OrderApi.

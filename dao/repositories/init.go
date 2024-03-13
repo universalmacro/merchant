@@ -6,7 +6,8 @@ import (
 )
 
 func init() {
-	ioc.GetDBInstance().AutoMigrate(&entities.Merchant{},
+	ioc.GetDBInstance().AutoMigrate(
+		&entities.Merchant{},
 		&entities.SubAccount{},
 		&entities.VerificationCode{},
 		&entities.Space{},

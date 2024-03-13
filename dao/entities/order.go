@@ -184,7 +184,7 @@ type Order struct {
 	TableLabel *string
 	Foods      FoodSpces
 	Status     string `gorm:"index;type:varchar(64)"`
-	BillId     uint   `gorm:"index"`
+	BillId     *uint  `gorm:"index"`
 	CreatorID  *int64
 }
 

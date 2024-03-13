@@ -68,7 +68,7 @@ func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*
 			db.Rollback()
 			return nil, errors.New("order is not in the same space as the bill")
 		}
-		orderEntities[i].BillId = billEntity.ID
+		orderEntities[i].BillId = &billEntity.ID
 		orderEntities[i].Status = "COMPLETED"
 		err := db.Save(&orderEntities[i]).Error
 		if err != nil {

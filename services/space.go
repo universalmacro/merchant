@@ -146,6 +146,9 @@ func (s *Space) ListPrinters(options ...dao.Option) []Printer {
 }
 
 func (s *Space) FoodCategories() []string {
+	if len(s.Space.FoodCategories) == 0 {
+		return make([]string, 0)
+	}
 	return s.Space.FoodCategories
 }
 

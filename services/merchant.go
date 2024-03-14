@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -48,7 +49,7 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 	return &Merchant{Entity: merchant}
 }
 
-func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, phoneNumber string) {
+func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, phoneNumber string) error {
 	merchant := m.GetMerchant(merchantId)
 	db := ioc.GetDBInstance()
 	db = dao.ApplyOptions(
@@ -60,27 +61,29 @@ func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, p
 	var verificationCode entities.VerificationCode
 	ctx := db.Find(&verificationCode)
 	code := random.RandomNumberString(6)
-	if ctx.RowsAffected == 0 {
-		verificationCode = entities.VerificationCode{
-			MerchantId:  merchantId,
-			CountryCode: countryCode,
-			Number:      phoneNumber,
-			Code:        code,
-		}
-		db.Create(&verificationCode)
-		smsSender := ioc.GetSmsSender()
-		config := ioc.GetConfig()
-		region := config.GetString("tencent.sms.region")
-		smsSender.SendWithConfig(models.PhoneNumber{
-			AreaCode: countryCode,
-			Number:   phoneNumber,
-		}, tencent.Config{
-			TemplateId: config.GetString("tencent.sms.templateId"),
-			Region:     &region,
-			AppId:      config.GetString("tencent.sms.appId"),
-		}, []string{code, merchant.Name()})
-		return
+	if ctx.RowsAffected != 0 {
+		return errors.New("verification code has been sent")
 	}
+	verificationCode = entities.VerificationCode{
+		MerchantId:  merchantId,
+		CountryCode: countryCode,
+		Number:      phoneNumber,
+		Code:        code,
+	}
+	db.Create(&verificationCode)
+	smsSender := ioc.GetSmsSender()
+	config := ioc.GetConfig()
+	err := smsSender.SendWithConfig(models.PhoneNumber{
+		AreaCode: countryCode,
+		Number:   phoneNumber,
+	}, tencent.Config{
+		TemplateId: config.GetString("tencent.sms.templateId"),
+		AppId:      config.GetString("tencent.sms.appId"),
+	}, []string{code, "創建" + merchant.Name() + "會員帳號"})
+	if err != nil {
+		return errors.New("sms send failed")
+	}
+	return nil
 }
 
 func (s *MerchantService) ListMerchants(index, limit int64) dao.List[Merchant] {

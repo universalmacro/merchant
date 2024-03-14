@@ -226,7 +226,7 @@ func foodSpecsGroupHelper(foods ...FoodSpec) []FoodSpecGroup {
 	return groups
 }
 
-func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderIds ...uint) (*Bill, error) {
+func createBillHelper(db *gorm.DB, completed bool, ac Account, amount uint, orderIds ...uint) (*Bill, error) {
 	var orderEntities []entities.Order
 	db.Find(&orderEntities, orderIds)
 	if len(orderEntities) == 0 {
@@ -242,7 +242,7 @@ func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderId
 		Amount:     amount,
 		SpaceID:    space.ID(),
 	}
-	if submit {
+	if completed {
 		db = db.Begin()
 	}
 	db.Create(&billEntity)
@@ -257,14 +257,16 @@ func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderId
 			return nil, errors.New("order is not in the same space as the bill")
 		}
 		orderEntities[i].BillId = &billEntity.ID
-		orderEntities[i].Status = "COMPLETED"
+		if completed {
+			orderEntities[i].Status = "COMPLETED"
+		}
 		err := db.Save(&orderEntities[i]).Error
 		if err != nil {
 			db.Rollback()
 			return nil, err
 		}
 	}
-	if submit {
+	if completed {
 		db.Commit()
 	}
 	return bill, nil

@@ -499,13 +499,13 @@ func (oc *OrderController) ListOrders(ctx *gin.Context) {
 		return
 	}
 	var options []dao.Option
+	options = append(options, dao.Where("space_id = ?", space.ID()))
 	if startAt, err := strconv.Atoi(ctx.Query("startAt")); err == nil {
 		options = append(options, dao.Where("created_at >= ?", time.Unix(int64(startAt), 0)))
 	}
 	if endAt, err := strconv.Atoi(ctx.Query("endAt")); err == nil {
 		options = append(options, dao.Where("created_at <= ?", time.Unix(int64(endAt), 0)))
 	}
-	options = append(options, dao.Where("space_id = ?", space.ID()))
 	if statuses := ctx.QueryArray("statuses"); len(statuses) > 0 {
 		options = append(options, dao.Where("status IN (?)", statuses))
 	}
@@ -521,8 +521,7 @@ func (oc *OrderController) ListOrders(ctx *gin.Context) {
 }
 
 func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {
-	food.SetName(
-		saveFoodRequest.Name).
+	food.SetName(saveFoodRequest.Name).
 		SetDescription(saveFoodRequest.Description).
 		SetPrice(saveFoodRequest.Price).
 		SetFixedOffset(saveFoodRequest.FixedOffset).

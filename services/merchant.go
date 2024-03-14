@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -51,11 +50,10 @@ func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, p
 	db := ioc.GetDBInstance()
 	db = dao.ApplyOptions(
 		db,
-		dao.Where("merchant_id = ? AND country_code = ? AND number = ? AND created_at < ?",
-			merchantId,
-			countryCode,
-			phoneNumber,
-			time.Now().Add(time.Minute*10)))
+		dao.Where("merchant_id = ?", merchantId),
+		dao.Where("country_code = ?", countryCode),
+		dao.Where("number = ?", phoneNumber),
+		dao.Where("created_at > ?", time.Now().Add(-time.Minute*10)))
 	var verificationCode entities.VerificationCode
 	ctx := db.Find(&verificationCode)
 	if ctx.RowsAffected == 0 {
@@ -68,8 +66,6 @@ func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, p
 		db.Create(&verificationCode)
 		return
 	}
-
-	fmt.Println(verificationCode)
 }
 
 func (s *MerchantService) ListMerchants(index, limit int64) dao.List[Merchant] {

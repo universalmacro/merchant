@@ -6,6 +6,8 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
+	"github.com/universalmacro/common/sms/models"
+	"github.com/universalmacro/common/sms/tencent"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/common/utils/random"
 	"github.com/universalmacro/merchant/dao/entities"
@@ -47,6 +49,7 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 }
 
 func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, phoneNumber string) {
+	merchant := m.GetMerchant(merchantId)
 	db := ioc.GetDBInstance()
 	db = dao.ApplyOptions(
 		db,
@@ -56,14 +59,26 @@ func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, p
 		dao.Where("created_at > ?", time.Now().Add(-time.Minute*10)))
 	var verificationCode entities.VerificationCode
 	ctx := db.Find(&verificationCode)
+	code := random.RandomNumberString(6)
 	if ctx.RowsAffected == 0 {
 		verificationCode = entities.VerificationCode{
 			MerchantId:  merchantId,
 			CountryCode: countryCode,
 			Number:      phoneNumber,
-			Code:        random.RandomNumberString(6),
+			Code:        code,
 		}
 		db.Create(&verificationCode)
+		smsSender := ioc.GetSmsSender()
+		config := ioc.GetConfig()
+		region := config.GetString("tencent.sms.region")
+		smsSender.SendWithConfig(models.PhoneNumber{
+			AreaCode: countryCode,
+			Number:   phoneNumber,
+		}, tencent.Config{
+			TemplateId: config.GetString("tencent.sms.templateId"),
+			Region:     &region,
+			AppId:      config.GetString("tencent.sms.appId"),
+		}, []string{code, merchant.Name()})
 		return
 	}
 }

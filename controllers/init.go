@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/universalmacro/common/server"
 	api "github.com/universalmacro/merchant-api-interfaces"
+	"github.com/universalmacro/merchant/services"
 	_ "github.com/universalmacro/merchant/services"
 )
 
@@ -20,6 +21,9 @@ func Init(addr ...string) {
 	var verificationController = newVerificationController()
 	var spaceController = newSpaceController()
 	var orderController = newOrderController()
+	var memberController = &MemberController{
+		memberService: services.GetMerchantService(),
+	}
 	router.GET("/orders/subscription", orderController.OrderSubscription)
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
@@ -40,5 +44,6 @@ func Init(addr ...string) {
 	api.VerificationApiBinding(router, verificationController)
 	api.SpaceApiBinding(router, spaceController)
 	api.OrderApiBinding(router, orderController)
+	api.MemberApiBinding(router, memberController)
 	router.Run(addr...)
 }

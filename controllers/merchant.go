@@ -24,11 +24,20 @@ type MerchantController struct {
 func (mc *MerchantController) SendMerchantVerificationCode(ctx *gin.Context) {
 	var createVerificationCodeRequest api.CreateVerificationCodeRequest
 	ctx.ShouldBindJSON(&createVerificationCodeRequest)
-
-	mc.merchantService.CreateVerificationCode(
+	err := mc.merchantService.CreateVerificationCode(
 		server.UintID(ctx, "merchantId"),
 		createVerificationCodeRequest.PhoneNumber.CountryCode,
 		createVerificationCodeRequest.PhoneNumber.Number)
+	if err != nil {
+		switch err {
+		case services.ErrVerificationCodeHasBeenSent:
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": services.ErrVerificationCodeHasBeenSent})
+		default:
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	ctx.JSON(http.StatusCreated, nil)
 }
 
 // GetSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.

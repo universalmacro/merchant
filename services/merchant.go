@@ -49,8 +49,41 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 	return &Merchant{Entity: merchant}
 }
 
-func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, phoneNumber string) error {
-	merchant := m.GetMerchant(merchantId)
+func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumber, code string) error {
+	merchant := ms.GetMerchant(merchantId)
+	if merchant == nil {
+		return errors.New("merchant not found")
+	}
+	verificationCode := ms.GetVerificationCode(merchantId, countryCode, phoneNumber)
+	if verificationCode == nil {
+		return errors.New("verification code not found")
+	}
+	if verificationCode.Code != code {
+		return errors.New("verification code not matching")
+	}
+	verificationCode.Tries++
+	if verificationCode.Tries >= 10 {
+		return errors.New("verification code has been tried too many times")
+	}
+	db := ioc.GetDBInstance()
+	var member entities.Member
+	ctx := db.Find(&member, "merchant_id = ? AND country_code = ? AND number = ?", merchantId, countryCode, phoneNumber)
+	if ctx.RowsAffected > 0 {
+		return errors.New("member already exists")
+	}
+	member = entities.Member{
+		MerchantId:  merchantId,
+		CountryCode: countryCode,
+		PhoneNumber: phoneNumber,
+	}
+
+	db.Create(&member)
+	return nil
+}
+
+var ErrVerificationCodeHasBeenSent = errors.New("verification code has been sent")
+
+func (m *MerchantService) GetVerificationCode(merchantId uint, countryCode, phoneNumber string) *entities.VerificationCode {
 	db := ioc.GetDBInstance()
 	db = dao.ApplyOptions(
 		db,
@@ -60,17 +93,27 @@ func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, p
 		dao.Where("created_at > ?", time.Now().Add(-time.Minute*10)))
 	var verificationCode entities.VerificationCode
 	ctx := db.Find(&verificationCode)
-	code := random.RandomNumberString(6)
-	if ctx.RowsAffected != 0 {
-		return errors.New("verification code has been sent")
+	if ctx.RowsAffected == 0 {
+		return nil
 	}
-	verificationCode = entities.VerificationCode{
+	return &verificationCode
+}
+
+func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, phoneNumber string) error {
+	merchant := m.GetMerchant(merchantId)
+	verificationCode := m.GetVerificationCode(merchantId, countryCode, phoneNumber)
+	code := random.RandomNumberString(6)
+	if verificationCode == nil {
+		return ErrVerificationCodeHasBeenSent
+	}
+	verificationCode = &entities.VerificationCode{
 		MerchantId:  merchantId,
 		CountryCode: countryCode,
 		Number:      phoneNumber,
 		Code:        code,
 	}
-	db.Create(&verificationCode)
+	db := ioc.GetDBInstance()
+	db.Create(verificationCode)
 	smsSender := ioc.GetSmsSender()
 	config := ioc.GetConfig()
 	err := smsSender.SendWithConfig(models.PhoneNumber{

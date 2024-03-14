@@ -21,9 +21,14 @@ type MerchantController struct {
 }
 
 // SendMerchantVerificationCode implements merchantapiinterfaces.MerchantApi.
-func (c *MerchantController) SendMerchantVerificationCode(ctx *gin.Context) {
+func (mc *MerchantController) SendMerchantVerificationCode(ctx *gin.Context) {
 	var createVerificationCodeRequest api.CreateVerificationCodeRequest
 	ctx.ShouldBindJSON(&createVerificationCodeRequest)
+
+	mc.merchantService.CreateVerificationCode(
+		server.UintID(ctx, "merchantId"),
+		createVerificationCodeRequest.PhoneNumber.CountryCode,
+		createVerificationCodeRequest.PhoneNumber.Number)
 }
 
 // GetSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.

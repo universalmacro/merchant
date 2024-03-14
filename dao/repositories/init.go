@@ -14,5 +14,6 @@ func init() {
 		&entities.Table{},
 		&entities.Food{},
 		&entities.Printer{},
-		&entities.Order{})
+		&entities.Order{},
+		&entities.Bill{})
 }

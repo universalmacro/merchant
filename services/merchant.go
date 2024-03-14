@@ -1,12 +1,14 @@
 package services
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
+	"github.com/universalmacro/common/utils/random"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
 	"github.com/universalmacro/merchant/ioc"
@@ -43,6 +45,31 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 		return nil
 	}
 	return &Merchant{Entity: merchant}
+}
+
+func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, phoneNumber string) {
+	db := ioc.GetDBInstance()
+	db = dao.ApplyOptions(
+		db,
+		dao.Where("merchant_id = ? AND country_code = ? AND number = ? AND created_at < ?",
+			merchantId,
+			countryCode,
+			phoneNumber,
+			time.Now().Add(time.Minute*10)))
+	var verificationCode entities.VerificationCode
+	ctx := db.Find(&verificationCode)
+	if ctx.RowsAffected == 0 {
+		verificationCode = entities.VerificationCode{
+			MerchantId:  merchantId,
+			CountryCode: countryCode,
+			Number:      phoneNumber,
+			Code:        random.RandomNumberString(6),
+		}
+		db.Create(&verificationCode)
+		return
+	}
+
+	fmt.Println(verificationCode)
 }
 
 func (s *MerchantService) ListMerchants(index, limit int64) dao.List[Merchant] {

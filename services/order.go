@@ -109,12 +109,11 @@ func (o *Order) FoodSpecs() []FoodSpec {
 func (o *Order) PrintKitchen() {
 	groups := foodSpecsGroupHelper(o.FoodSpecs()...)
 	timestring := time.Now().Add(time.Hour * 8).Format("2006-01-02 15:04")
-	fmt.Println(timestring)
 	var tableLabel string
 	if o.TableLabel != nil {
 		tableLabel = *o.TableLabel
 	} else {
-		tableLabel = "外帶"
+		tableLabel = "無桌號"
 	}
 	for _, group := range groups {
 		var pc feieyun.PrintContent
@@ -132,7 +131,16 @@ func (o *Order) PrintKitchen() {
 }
 
 func (o *Order) PrintCashier() {
-
+	// printers := o.Space().ListPrinters(dao.Where("type = ?", "CASHIER"))
+	// for _, printer := range printers {
+	// groups := foodSpecsGroupHelper(o.FoodSpecs()...)
+	// timestring := time.Now().Add(time.Hour * 8).Format("2006-01-02 15:04")
+	// var printContent feieyun.PrintContent
+	// printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: o.Space().Name()}})
+	// printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("餐號: %d", bill.PickUpCode)}})
+	// printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("桌號: %s", table.Label)}})
+	// printContent.AddDiv(p.Width())
+	// }
 }
 
 func (o *Order) CancelItem(food FoodSpec) (*Order, error) {

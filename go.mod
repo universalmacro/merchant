@@ -3,18 +3,19 @@ module github.com/universalmacro/merchant
 go 1.22.1
 
 require (
+	github.com/Dparty/feieyun v0.0.0-20231115080030-f7c885b6b906
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/gorilla/websocket v1.5.1
 	github.com/spf13/viper v1.18.2
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
 	github.com/universalmacro/common v0.0.0-20240313084251-bc1515df6e1f
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240313084122-ab68b3f887c1
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240314022032-59954cf449ae
 	gorm.io/gorm v1.25.7
 )
 
 require (
 	github.com/Depado/ginprom v1.8.1 // indirect
-	github.com/Dparty/feieyun v0.0.0-20231115080030-f7c885b6b906 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.11.2 // indirect
@@ -31,7 +32,6 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

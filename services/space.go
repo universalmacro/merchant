@@ -133,8 +133,11 @@ func (s *Space) CreatePrinter(name, sn, printerType, model string) *Printer {
 	return &Printer{printer}
 }
 
-func (s *Space) ListPrinters() []Printer {
-	printers, _ := repositories.GetPrinterRepository().FindMany("space_id = ?", s.ID())
+func (s *Space) ListPrinters(options ...dao.Option) []Printer {
+	db := ioc.GetDBInstance()
+	db = dao.ApplyOptions(db, options...)
+	var printers []entities.Printer
+	db.Find(&printers)
 	result := make([]Printer, len(printers))
 	for i := range printers {
 		result[i] = Printer{&printers[i]}

@@ -1,10 +1,13 @@
 package services
 
 import (
+	"github.com/Dparty/feieyun"
+	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
 	"github.com/universalmacro/merchant/dao/entities"
 	"github.com/universalmacro/merchant/dao/repositories"
+	"github.com/universalmacro/merchant/ioc"
 )
 
 type Printer struct {
@@ -40,6 +43,12 @@ func (p *Printer) Submit() *Printer {
 	return p
 }
 
+func (p *Printer) Print(content feieyun.PrintContent) {
+	printerFactory := ioc.GetPrinterFactory()
+	printer, _ := printerFactory.Connect(p.Sn)
+	printer.Print(content.String(), "")
+}
+
 var GetPrinterService = singleton.EagerSingleton(func() *PrinterService {
 	return &PrinterService{
 		printerRepository: repositories.GetPrinterRepository(),
@@ -56,6 +65,15 @@ func (s *PrinterService) GetPrinter(printerId uint) *Printer {
 		return nil
 	}
 	return &Printer{printer}
+}
+
+func (s *PrinterService) List(options ...dao.Option) []Printer {
+	printers, _ := s.printerRepository.List(options...)
+	var result []Printer
+	for i := range printers {
+		result = append(result, Printer{&printers[i]})
+	}
+	return result
 }
 
 func (s *PrinterService) CreatePrinter(name, sn string) *Printer {

@@ -20,6 +20,7 @@ func Init(addr ...string) {
 	var verificationController = newVerificationController()
 	var spaceController = newSpaceController()
 	var orderController = newOrderController()
+	router.GET("/orders/subscription", orderController.OrderSubscription)
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")

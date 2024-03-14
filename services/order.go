@@ -3,7 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/Dparty/feieyun"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/singleton"
 	"github.com/universalmacro/common/utils"
@@ -105,7 +107,28 @@ func (o *Order) FoodSpecs() []FoodSpec {
 }
 
 func (o *Order) PrintKitchen() {
-
+	groups := foodSpecsGroupHelper(o.FoodSpecs()...)
+	timestring := time.Now().Add(time.Hour * 8).Format("2006-01-02 15:04")
+	fmt.Println(timestring)
+	var tableLabel string
+	if o.TableLabel != nil {
+		tableLabel = *o.TableLabel
+	} else {
+		tableLabel = "外帶"
+	}
+	for _, group := range groups {
+		var pc feieyun.PrintContent
+		pc.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("餐號: %s", o.Code())}},
+			&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("桌號: %s", tableLabel)}},
+			&feieyun.Bold{Content: &feieyun.Text{Content: fmt.Sprintf("%s X%d", group.Name(), group.Amount)}})
+		for _, option := range group.FoodSpec.Spec.Spec {
+			pc.AddLines(&feieyun.Bold{Content: &feieyun.Text{Content: fmt.Sprintf("-  %sX%d", option.Optioned, group.Amount)}})
+		}
+		pc.AddLines(&feieyun.Text{Content: timestring})
+		for _, printer := range group.Printers() {
+			printer.Print(pc)
+		}
+	}
 }
 
 func (o *Order) PrintCashier() {
@@ -167,6 +190,31 @@ func (o *Order) Submit() *Order {
 
 func (o *Order) Space() *Space {
 	return GetSpaceService().GetSpace(o.Order.SpaceID)
+}
+
+type FoodSpecGroup struct {
+	FoodSpec
+	Amount uint
+}
+
+func foodSpecsGroupHelper(foods ...FoodSpec) []FoodSpecGroup {
+	var groups []FoodSpecGroup
+	for _, food := range foods {
+		if len(groups) == 0 {
+			groups = append(groups, FoodSpecGroup{food, 1})
+		} else {
+			for i, group := range groups {
+				if group.FoodSpec.Equals(food) {
+					groups[i].Amount++
+					break
+				}
+				if i == len(groups)-1 {
+					groups = append(groups, FoodSpecGroup{food, 1})
+				}
+			}
+		}
+	}
+	return groups
 }
 
 func createBillHelper(db *gorm.DB, submit bool, ac Account, amount uint, orderIds ...uint) (*Bill, error) {

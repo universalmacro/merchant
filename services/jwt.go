@@ -14,3 +14,10 @@ type Claims struct {
 	Account    string `json:"account"`
 	Type       string `json:"type"`
 }
+
+type MemberClaims struct {
+	jwt.StandardClaims
+	ID         string `json:"id"`
+	MerchantID string `json:"merchantId"`
+	Type       string `json:"type"`
+}

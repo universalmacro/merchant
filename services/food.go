@@ -61,6 +61,9 @@ func (f *Food) SetStatus(status string) *Food {
 }
 
 func (f *Food) Categories() []string {
+	if len(f.Food.Categories) == 0 {
+		return make([]string, 0)
+	}
 	return f.Food.Categories
 }
 

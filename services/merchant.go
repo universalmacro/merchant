@@ -49,36 +49,46 @@ func (s *MerchantService) CreateMerchant(shortMerchantId, account, password stri
 	return &Merchant{Entity: merchant}
 }
 
-func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumber, code string) error {
+func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumber, code string) (string, error) {
 	merchant := ms.GetMerchant(merchantId)
 	if merchant == nil {
-		return errors.New("merchant not found")
+		return "", errors.New("merchant not found")
 	}
 	verificationCode := ms.GetVerificationCode(merchantId, countryCode, phoneNumber)
 	if verificationCode == nil {
-		return errors.New("verification code not found")
+		return "", errors.New("verification code not found")
 	}
 	if verificationCode.Code != code {
-		return errors.New("verification code not matching")
+		return "", errors.New("verification code not matching")
 	}
 	verificationCode.Tries++
 	if verificationCode.Tries >= 10 {
-		return errors.New("verification code has been tried too many times")
+		return "", errors.New("verification code has been tried too many times")
 	}
 	db := ioc.GetDBInstance()
+	db.Save(verificationCode)
 	var member entities.Member
 	ctx := db.Find(&member, "merchant_id = ? AND country_code = ? AND number = ?", merchantId, countryCode, phoneNumber)
 	if ctx.RowsAffected > 0 {
-		return errors.New("member already exists")
+		return "", errors.New("member already exists")
 	}
 	member = entities.Member{
 		MerchantId:  merchantId,
 		CountryCode: countryCode,
 		PhoneNumber: phoneNumber,
 	}
-
+	db.Save(&member)
+	jwtSigner := ioc.GetJwtSigner()
+	token, err := jwtSigner.SignJwt(MemberClaims{
+		ID:         utils.UintToString(member.ID),
+		MerchantID: utils.UintToString(merchantId),
+		Type:       "MEMBER",
+	})
+	if err != nil {
+		return token, err
+	}
 	db.Create(&member)
-	return nil
+	return token, nil
 }
 
 var ErrVerificationCodeHasBeenSent = errors.New("verification code has been sent")

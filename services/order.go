@@ -45,7 +45,8 @@ func (os *OrderService) List(options ...dao.Option) []Order {
 }
 
 func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*Bill, error) {
-	return createBillHelper(os.db, true, ac, amount, orderIds...)
+	bill, err := createBillHelper(os.db, true, ac, amount, orderIds...)
+	return bill, err
 }
 
 func (os *OrderService) PrintBill(ac Account, amount uint, orderIds ...uint) (*Bill, error) {

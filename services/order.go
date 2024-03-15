@@ -85,8 +85,8 @@ func (o *Order) Granted(account Account) bool {
 	return account.MerchantId() == o.Space().MerchantId
 }
 
-func (o *Order) SetTableLabel(label string) *Order {
-	o.Order.TableLabel = &label
+func (o *Order) SetTableLabel(label *string) *Order {
+	o.Order.TableLabel = label
 	return o
 }
 

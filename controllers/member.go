@@ -13,14 +13,21 @@ type MemberController struct {
 
 // SignupMember implements merchantapiinterfaces.MemberApi.
 func (mc *MemberController) SignupMember(ctx *gin.Context) {
-	var createMemberRequest api.CreateMemberRequest
-	ctx.ShouldBindJSON(&createMemberRequest)
-	mc.memberService.SignupMember(
+	var signupMemberRequest api.SignupMemberRequest
+	ctx.ShouldBindJSON(&signupMemberRequest)
+	token, err := mc.memberService.SignupMember(
 		server.UintID(ctx, "merchantId"),
-		createMemberRequest.PhoneNumber.CountryCode,
-		createMemberRequest.PhoneNumber.Number,
-		*createMemberRequest.VerificationCode,
+		signupMemberRequest.PhoneNumber.CountryCode,
+		signupMemberRequest.PhoneNumber.Number,
+		signupMemberRequest.VerificationCode,
 	)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(201, api.Session{
+		Token: token,
+	})
 }
 
 // CreateMember implements merchantapiinterfaces.MemberApi.

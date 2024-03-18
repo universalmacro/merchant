@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,21 +29,34 @@ func (mc *MerchantController) SendMerchantVerificationCode(ctx *gin.Context) {
 		server.UintID(ctx, "merchantId"),
 		createVerificationCodeRequest.PhoneNumber.CountryCode,
 		createVerificationCodeRequest.PhoneNumber.Number)
+	fmt.Println(err)
 	if err != nil {
-		switch err {
-		case services.ErrVerificationCodeHasBeenSent:
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": services.ErrVerificationCodeHasBeenSent})
+		statusCode := 0
+		switch {
+		case err == services.ErrVerificationCodeHasBeenSent:
+			statusCode = http.StatusBadRequest
 		default:
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			statusCode = http.StatusInternalServerError
 		}
+		ctx.JSON(statusCode, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusCreated, nil)
 }
 
 // GetSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.
-func (*MerchantController) GetSelfMerchantConfig(ctx *gin.Context) {
-	panic("unimplemented")
+func (mc *MerchantController) GetSelfMerchantConfig(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return
+	}
+	merchant := mc.merchantService.GetMerchant(account.MerchantId())
+	if merchant == nil {
+		fault.GinHandler(ctx, fault.ErrNotFound)
+		return
+	}
+	ctx.JSON(http.StatusOK, ConvertMerchant(*merchant))
 }
 
 // UpdateSelfMerchantConfig implements merchantapiinterfaces.MerchantApi.
@@ -102,8 +116,18 @@ func (*MerchantController) GetMerchant(ctx *gin.Context) {
 }
 
 // GetSelfMerchant implements merchantapiinterfaces.MerchantApi.
-func (*MerchantController) GetSelfMerchant(ctx *gin.Context) {
-	panic("unimplemented")
+func (mc *MerchantController) GetSelfMerchant(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return
+	}
+	merchant := mc.merchantService.GetMerchant(account.MerchantId())
+	if merchant == nil {
+		fault.GinHandler(ctx, fault.ErrNotFound)
+		return
+	}
+	ctx.JSON(http.StatusOK, ConvertMerchant(*merchant))
 }
 
 // ListMerchants implements merchantapiinterfaces.MerchantApi.

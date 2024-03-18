@@ -16,4 +16,5 @@ func init() {
 	db.AutoMigrate(&entities.Printer{})
 	db.AutoMigrate(&entities.Order{})
 	db.AutoMigrate(&entities.Bill{})
+	db.AutoMigrate(&entities.Member{})
 }

@@ -281,7 +281,7 @@ func (oc *OrderController) CreateFood(ctx *gin.Context) {
 	}
 	var createFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&createFoodRequest)
-	food, err := updateFood(createFoodRequest, services.NewEmptyFood())
+	food, err := updateFoodHelper(createFoodRequest, services.NewEmptyFood())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -418,7 +418,7 @@ func (oc *OrderController) UpdateFood(ctx *gin.Context) {
 	}
 	var updateFoodRequest api.SaveFoodRequest
 	ctx.ShouldBindJSON(&updateFoodRequest)
-	_, err := updateFood(updateFoodRequest, food)
+	_, err := updateFoodHelper(updateFoodRequest, food)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -520,7 +520,7 @@ func (oc *OrderController) ListOrders(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func updateFood(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {
+func updateFoodHelper(saveFoodRequest api.SaveFoodRequest, food *services.Food) (*services.Food, error) {
 	food.SetName(saveFoodRequest.Name).
 		SetDescription(saveFoodRequest.Description).
 		SetPrice(saveFoodRequest.Price).

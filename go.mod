@@ -10,7 +10,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.47
 	github.com/universalmacro/common v0.0.0-20240314042016-9f4fe7085a20
-	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240315022931-6dae21c01df2
+	github.com/universalmacro/merchant-api-interfaces v0.0.0-20240317134921-1493c93b6dbb
 	gorm.io/gorm v1.25.7
 )
 

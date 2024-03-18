@@ -16,6 +16,8 @@ import (
 	"github.com/universalmacro/merchant/ioc"
 )
 
+const MAX_TRIES = 10
+
 var GetMerchantService = singleton.EagerSingleton(func() *MerchantService {
 	return &MerchantService{
 		merchantRepository:   repositories.GetMerchantRepository(),
@@ -58,6 +60,12 @@ func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumbe
 	if verificationCode == nil {
 		return "", errors.New("verification code not found")
 	}
+	if verificationCode.Tries > MAX_TRIES {
+		return "", errors.New("verification code has been tried too many times")
+	}
+	verificationCode.Tries++
+	db := ioc.GetDBInstance()
+	db.Save(verificationCode)
 	if verificationCode.Code != code {
 		return "", errors.New("verification code not matching")
 	}
@@ -65,8 +73,6 @@ func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumbe
 	if verificationCode.Tries >= 10 {
 		return "", errors.New("verification code has been tried too many times")
 	}
-	db := ioc.GetDBInstance()
-	db.Save(verificationCode)
 	var member entities.Member
 	ctx := db.Find(&member, "merchant_id = ? AND country_code = ? AND number = ?", merchantId, countryCode, phoneNumber)
 	if ctx.RowsAffected > 0 {
@@ -113,7 +119,7 @@ func (m *MerchantService) CreateVerificationCode(merchantId uint, countryCode, p
 	merchant := m.GetMerchant(merchantId)
 	verificationCode := m.GetVerificationCode(merchantId, countryCode, phoneNumber)
 	code := random.RandomNumberString(6)
-	if verificationCode == nil {
+	if verificationCode != nil {
 		return ErrVerificationCodeHasBeenSent
 	}
 	verificationCode = &entities.VerificationCode{

@@ -69,31 +69,24 @@ func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumbe
 	if verificationCode.Code != code {
 		return "", errors.New("verification code not matching")
 	}
-	verificationCode.Tries++
 	if verificationCode.Tries >= 10 {
 		return "", errors.New("verification code has been tried too many times")
 	}
+	db.Delete(verificationCode)
 	var member entities.Member
-	ctx := db.Find(&member, "merchant_id = ? AND country_code = ? AND number = ?", merchantId, countryCode, phoneNumber)
+	ctx := db.Find(&member, "merchant_id = ? AND country_code = ? AND phone_number = ?", merchantId, countryCode, phoneNumber)
 	if ctx.RowsAffected > 0 {
-		return "", errors.New("member already exists")
+		m := Member{member}
+		return m.GenerateToken(), nil
 	}
 	member = entities.Member{
 		MerchantId:  merchantId,
 		CountryCode: countryCode,
 		PhoneNumber: phoneNumber,
 	}
-	db.Save(&member)
-	jwtSigner := ioc.GetJwtSigner()
-	token, err := jwtSigner.SignJwt(MemberClaims{
-		ID:         utils.UintToString(member.ID),
-		MerchantID: utils.UintToString(merchantId),
-		Type:       "MEMBER",
-	})
-	if err != nil {
-		return token, err
-	}
 	db.Create(&member)
+	m := Member{member}
+	token := m.GenerateToken()
 	return token, nil
 }
 

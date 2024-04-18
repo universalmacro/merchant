@@ -12,6 +12,6 @@ RUN go build -o /main
 
 FROM debian:latest AS production-stage
 WORKDIR /
-COPY --from=build-stage /app/main /main
+COPY --from=build-stage /main /main
 EXPOSE 8080
 CMD ["/main"]

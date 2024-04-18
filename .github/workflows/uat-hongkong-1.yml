@@ -20,4 +20,4 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}
             sudo docker stop ${{ env.DOCKER_NAME }}
             sudo docker rm ${{ env.DOCKER_NAME }}
-            sudo docker run -dp ${{env.PORT}}:8080 --name ${{ env.DOCKER_NAME }} --mount type=bind,source=${{env.CONFIG}},target=/.env.yaml ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}
+            sudo docker run -dp ${{env.PORT}}:8080 --name ${{ env.DOCKER_NAME }} --mount type=bind,source=${{env.CONFIG}},target=/app/.env.yaml ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_NAME }}

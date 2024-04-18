@@ -10,7 +10,6 @@ COPY . .
 RUN go build -o /main
 
 FROM debian:latest AS production-stage
-COPY --from=build-stage /app/.env.yml /.env.yml
 COPY --from=build-stage /main /main
 EXPOSE 8080
 CMD ["/main"]

@@ -51,10 +51,10 @@ func (os *OrderService) CreateBill(ac Account, amount uint, orderIds ...uint) (*
 
 func (os *OrderService) PrintBill(ac Account, amount uint, orderIds ...uint) (*Bill, error) {
 	bill, err := createBillHelper(os.db, false, ac, amount, orderIds...)
-	if err != nil {
-		return nil, err
-	}
-	bill.Print()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// bill.Print()
 	return bill, err
 }
 

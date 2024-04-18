@@ -1,6 +1,8 @@
 package ioc
 
 import (
+	"fmt"
+
 	"github.com/universalmacro/common/auth"
 	"github.com/universalmacro/common/config"
 	"github.com/universalmacro/common/dao"
@@ -28,7 +30,9 @@ func createDBInstance() *gorm.DB {
 		viper.GetString("core.apiUrl"),
 		viper.GetString("node.id"),
 		viper.GetString("node.secretKey"))
+	fmt.Println(configClient)
 	config := configClient.GetConfig()
+	fmt.Println(config)
 	database := config.Database
 	db, err := dao.NewConnection(
 		database.Username,

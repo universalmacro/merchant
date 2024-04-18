@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/universalmacro/common/auth"
-	"github.com/universalmacro/common/config"
 	"github.com/universalmacro/common/dao"
 	"github.com/universalmacro/common/node"
 	"github.com/universalmacro/common/singleton"
@@ -12,15 +11,6 @@ import (
 )
 
 var GetJwtSigner = auth.NewSingletonJwtSigner([]byte(GetConfig().GetString("jwt.secret")))
-
-func createJwtSignerSingleton() *auth.JwtSigner {
-	configClient := node.NewNodeConfigClient(
-		config.GetString("core.apiUrl"),
-		config.GetString("node.id"),
-		config.GetString("node.secretKey"))
-	config := configClient.GetConfig()
-	return auth.NewJwtSigner([]byte(config.Server.JwtSecret))
-}
 
 var GetDBInstance = singleton.EagerSingleton(createDBInstance)
 

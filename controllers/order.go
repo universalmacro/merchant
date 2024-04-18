@@ -309,8 +309,6 @@ func (oc *OrderController) CreateOrder(ctx *gin.Context) {
 		createOrderRequest.TableLabel,
 		factories.NewFoodSpecs(createOrderRequest.Foods),
 	)
-	order.PrintKitchen()
-	order.PrintCashier()
 	ctx.JSON(http.StatusCreated, ConvertOrder(&order))
 }
 

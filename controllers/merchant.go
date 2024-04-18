@@ -180,9 +180,9 @@ func (c *MerchantController) CreateMerchant(ctx *gin.Context) {
 	}
 	var request api.CreateMerchantRequest
 	ctx.ShouldBindJSON(&request)
-	merchant := c.merchantService.CreateMerchant(request.ShortMerchantId, request.Account, request.Password)
-	if merchant == nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+	merchant, err := c.merchantService.CreateMerchant(request.ShortMerchantId, request.Account, request.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "create merchant failed"})
 		return
 	}
 	ctx.JSON(http.StatusCreated, api.Merchant{

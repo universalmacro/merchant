@@ -132,16 +132,30 @@ func (o *Order) PrintKitchen() {
 }
 
 func (o *Order) PrintCashier() {
-	// printers := o.Space().ListPrinters(dao.Where("type = ?", "CASHIER"))
-	// for _, printer := range printers {
-	// groups := foodSpecsGroupHelper(o.FoodSpecs()...)
-	// timestring := time.Now().Add(time.Hour * 8).Format("2006-01-02 15:04")
-	// var printContent feieyun.PrintContent
-	// printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: o.Space().Name()}})
-	// printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("餐號: %d", bill.PickUpCode)}})
-	// printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("桌號: %s", table.Label)}})
-	// printContent.AddDiv(p.Width())
-	// }
+	printers := o.Space().ListPrinters(dao.Where("type = ?", "CASHIER"))
+	groups := foodSpecsGroupHelper(o.FoodSpecs()...)
+	timestring := time.Now().Add(time.Hour * 8).Format("2006-01-02 15:04")
+	var printContent feieyun.PrintContent
+	factory := ioc.GetPrinterFactory()
+
+	tableLabel := "無桌號"
+	if o.TableLabel != nil {
+		tableLabel = *o.TableLabel
+	}
+	printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: o.Space().Name()}})
+	printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("餐號: %s", o.Code())}})
+	printContent.AddLines(&feieyun.CenterBold{Content: &feieyun.Text{Content: fmt.Sprintf("桌號: %s", tableLabel)}})
+	for _, group := range groups {
+		printContent.AddLines(&feieyun.Bold{Content: &feieyun.Text{Content: fmt.Sprintf("%s %sX%d", group.Name(), priceToFloatingString(group.Food.Price()), group.Amount)}})
+		for _, option := range group.FoodSpec.Spec.Spec {
+			printContent.AddLines(&feieyun.Bold{Content: &feieyun.Text{Content: fmt.Sprintf("- %s X%d", option.Optioned, group.Amount)}})
+		}
+	}
+	printContent.AddLines(&feieyun.Text{Content: timestring})
+	for _, p := range printers {
+		printer, _ := factory.Connect(p.Sn)
+		printer.Print(printContent.String(), "")
+	}
 }
 
 func (o *Order) CancelItem(food FoodSpec) (*Order, error) {
@@ -270,4 +284,8 @@ func createBillHelper(db *gorm.DB, completed bool, ac Account, amount uint, orde
 		db.Commit()
 	}
 	return bill, nil
+}
+
+func priceToFloatingString(price int64) string {
+	return fmt.Sprintf("%.2f", float64(price)/100)
 }

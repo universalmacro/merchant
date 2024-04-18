@@ -135,6 +135,7 @@ func (s *Space) CreatePrinter(name, sn, printerType, model string) *Printer {
 
 func (s *Space) ListPrinters(options ...dao.Option) []Printer {
 	db := ioc.GetDBInstance()
+	db = dao.ApplyOptions(db, dao.Where("space_id = ?", s.ID()))
 	db = dao.ApplyOptions(db, options...)
 	var printers []entities.Printer
 	db.Find(&printers)

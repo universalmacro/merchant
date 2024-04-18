@@ -38,17 +38,17 @@ func (s *MerchantService) GetMerchant(merchantId uint) *Merchant {
 	return &Merchant{Entity: merchant}
 }
 
-func (s *MerchantService) CreateMerchant(shortMerchantId, account, password string) *Merchant {
+func (s *MerchantService) CreateMerchant(shortMerchantId, account, password string) (*Merchant, error) {
 	merchant := &entities.Merchant{
 		ShortMerchantId: shortMerchantId,
 		Account:         account,
 	}
 	merchant.SetPassword(password)
 	_, ctx := s.merchantRepository.Create(merchant)
-	if ctx.RowsAffected == 0 {
-		return nil
+	if ctx.Error != nil {
+		return nil, ctx.Error
 	}
-	return &Merchant{Entity: merchant}
+	return &Merchant{Entity: merchant}, nil
 }
 
 func (ms *MerchantService) SignupMember(merchantId uint, countryCode, phoneNumber, code string) (string, error) {

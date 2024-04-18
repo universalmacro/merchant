@@ -8,5 +8,10 @@ RUN git config --global url."https://${GIT_NAME}:${GIT_TOKEN}@github.com".instea
 RUN go mod download
 COPY . .
 RUN go build -o /main
+
+
+FROM debian:latest AS production-stage
+WORKDIR /
+COPY --from=build-stage /app/main /main
 EXPOSE 8080
-CMD [ "/main" ]
+CMD ["/main"]
